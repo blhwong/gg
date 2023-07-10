@@ -40,7 +40,7 @@ query = """
                     winnerId
                     state
                     setGamesType
-                    totalGames
+                    round
                     phaseGroup {
                         displayIdentifier
                     }

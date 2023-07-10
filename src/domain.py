@@ -38,17 +38,23 @@ class Set:
 
     def __init__(
             self,
+            identifier,
             display_score,
             full_round_text,
             total_games,
+            round_num,
+            losers_placement,
             winner_id,
             entrants
     ):
         self.winner = None
         self.loser = None
         self.upset_factor = 0
+        self.id = identifier
         self.display_score = display_score
         self.full_round_text = full_round_text
+        self.round = round_num
+        self.losers_placement = losers_placement
         self.total_games = total_games
         self.init_slots(winner_id, entrants)
         self.init_upset_factor()
@@ -60,9 +66,18 @@ class Set:
 
     def init_upset_factor(self):
         self.upset_factor = upset_factor_table.get_upset_factor(
-            self.winner.initial_seed_number,
-            self.loser.initial_seed_number,
+            self.winner.initial_seed,
+            self.loser.initial_seed,
         )
+
+    def is_winners_bracket(self):
+        return self.round > 0
+
+    def is_dq(self):
+        return self.display_score == 'DQ'
+
+    def is_dq_and_out(self):
+        return not self.is_winners_bracket() and self.is_dq()
 
 
 class Entrant:
@@ -70,7 +85,7 @@ class Entrant:
     def __repr__(self):
         return json.dumps(self, default=lambda o: o.__dict__, sort_keys=True, indent=4)
 
-    def __init__(self, identifier, name, initial_seed_number):
+    def __init__(self, identifier, name, initial_seed):
         self.id = identifier
         self.name = name
-        self.initial_seed_number = initial_seed_number
+        self.initial_seed = initial_seed
