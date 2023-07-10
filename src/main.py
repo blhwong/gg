@@ -2,18 +2,22 @@ import json
 from api import get_event
 from service import calculate_upset_factors
 
-page = 1
 slug = 'tournament/high-rez/event/smash-ultimate-singles-day-two'
 
 sets = []
 
-res = get_event(slug, page)
-sets += res['data']['event']['sets']['nodes']
+page = 1
 
-while page < res['data']['event']['sets']['pageInfo']['totalPages']:
-    page += 1
+while True:
     print(page)
     res = get_event(slug, page)
+    if 'errors' in res:
+        print(res['errors'])
+        break
+    if page > res['data']['event']['sets']['pageInfo']['totalPages']:
+        print('Done')
+        break
+    page += 1
     sets += res['data']['event']['sets']['nodes']
 
 
