@@ -1,6 +1,6 @@
 import json
 from api import get_event
-from service import calculate_upset_factors
+from mapper import to_domain_set
 
 slug = 'tournament/high-rez/event/smash-ultimate-singles-day-two'
 
@@ -14,15 +14,15 @@ while True:
     if 'errors' in res:
         print(res['errors'])
         break
-    if page > res['data']['event']['sets']['pageInfo']['totalPages']:
+    total_pages = res['data']['event']['sets']['pageInfo']['totalPages']
+    if page > total_pages:
         print('Done')
         break
     page += 1
-    sets += res['data']['event']['sets']['nodes']
+    sets += [to_domain_set(s) for s in res['data']['event']['sets']['nodes']]
 
 
-upset_factors = calculate_upset_factors(sets)
+sets.sort(key=lambda s: s.upset_factor)
 
-upset_factors.sort(key=lambda x: x['upset_factor'])
-
-print(json.dumps(upset_factors, indent=4))
+print(sets)
+print(len(sets))

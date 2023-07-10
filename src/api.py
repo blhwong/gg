@@ -79,4 +79,6 @@ def get_event(slug, page=None):
         'Content-Type': 'application/json',
     }
     res = requests.post(api_url, json=payload, headers=headers)
+    if res.status_code != 200:
+        res.raise_for_status()
     return res.json()
