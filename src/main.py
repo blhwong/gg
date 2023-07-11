@@ -1,7 +1,8 @@
 import json
-from src.startgg.api import get_event
+
+from src.integrations.startgg.api import get_event
 from mapper import to_domain_set, to_markdown, to_markdown_table
-from db import SetsInMemoryDb
+from src.data.db import SetsInMemoryDb
 from time import sleep
 from requests.exceptions import HTTPError
 
@@ -14,7 +15,7 @@ use_cache = True
 sets_db = SetsInMemoryDb()
 
 if use_cache:
-    with open('data/startgg_data.json', 'r') as data:
+    with open('src/data/startgg_data.json', 'r') as data:
         sets += [to_domain_set(s) for s in json.load(data)]
     data.close()
 else:
@@ -45,12 +46,16 @@ upset_thread = sets_db.get_upset_thread()
 
 md = to_markdown(upset_thread)
 
-md_table = to_markdown_table(upset_thread)
-
-# print(md)
 
 with open('test.md', 'w') as file:
     file.write(md)
 
-with open('test_table.md', 'w') as table:
-    table.write(md_table)
+
+
+# subreddit = reddit.subreddit(f'u_{settings.REDDIT_USERNAME}')
+
+# subreddit.submit(title="Test", selftext=md)
+
+# submission = reddit.submission("14wynpr")
+
+# submission.edit(md)

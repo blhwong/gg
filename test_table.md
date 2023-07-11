@@ -67,52 +67,52 @@
 |Capitancito (seed 43)|2-1|Toasted (seed 107), out at 5th|
 
 # DQs
-Sonix\
-26R | Cosmos\
-BiB | jaredisking1\
-NVR | PkChris\
-26R | Zinoto\
-GRNT/SG/S/MXC | Vapor\
-Lumeckos\
-Commentator | Nurse\
-EWA | J.R.\
-This Is A DQ\
-Seraphy\
-Poda\
-Frimma\
-Sefaro\
-ReBoot\
-toughsnow\
-Gooseman\
-l0ne\
-SwagMaster69\
-yoon\
-André\
-Daxelfrax\
-CnF | Moment\
-oni!\
-DMS | Capsize\
-StepBro\
-Botman\
-Emike\
-TSRN | Vidwadu\
-IsaiahJH\
-ABB | Nitro\
-Okaay\
-BigNasty\
-Trigger\
-Marceline\
-Yonkō | Shiina\
-Penguini\
-MXC/$WAG | LemonKW\
-DQ - | Peachyツ\
-zzzetler\
-Promachos\
-OKSL | Doogs\
-dollarnuftynuf\
-Bhavan\
-comfycontent\
-Arwen\
-TehBlueOne\
-Blu\
+Sonix  
+26R | Cosmos  
+BiB | jaredisking1  
+NVR | PkChris  
+26R | Zinoto  
+GRNT/SG/S/MXC | Vapor  
+Lumeckos  
+Commentator | Nurse  
+EWA | J.R.  
+This Is A DQ  
+Seraphy  
+Poda  
+Frimma  
+Sefaro  
+ReBoot  
+toughsnow  
+Gooseman  
+l0ne  
+SwagMaster69  
+yoon  
+André  
+Daxelfrax  
+CnF | Moment  
+oni!  
+DMS | Capsize  
+StepBro  
+Botman  
+Emike  
+TSRN | Vidwadu  
+IsaiahJH  
+ABB | Nitro  
+Okaay  
+BigNasty  
+Trigger  
+Marceline  
+Yonkō | Shiina  
+Penguini  
+MXC/$WAG | LemonKW  
+DQ - | Peachyツ  
+zzzetler  
+Promachos  
+OKSL | Doogs  
+dollarnuftynuf  
+Bhavan  
+comfycontent  
+Arwen  
+TehBlueOne  
+Blu  
 ZAP

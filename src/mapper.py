@@ -1,5 +1,5 @@
 from domain import Set, Entrant, Game, Selection, Character
-from db import CharactersInMemoryDb
+from src.data.db import CharactersInMemoryDb
 import inflect
 
 p = inflect.engine()
@@ -116,10 +116,10 @@ def to_dq_line_item(s):
 
 
 def to_markdown(upset_thread):
-    winners = '\\\n'.join([to_line_item(s) for s in upset_thread.winners])
-    losers = '\\\n'.join([to_line_item(s) for s in upset_thread.losers])
-    notables = '\\\n'.join([to_line_item(s) for s in upset_thread.notables])
-    dqs = '\\\n'.join([to_dq_line_item(s) for s in upset_thread.dqs])
+    winners = '  \n'.join([to_line_item(s) for s in upset_thread.winners])
+    losers = '  \n'.join([to_line_item(s) for s in upset_thread.losers])
+    notables = '  \n'.join([to_line_item(s) for s in upset_thread.notables])
+    dqs = '  \n'.join([to_dq_line_item(s) for s in upset_thread.dqs])
     return f"""
 # Winners
 {winners}
@@ -139,7 +139,7 @@ def to_markdown_table(upset_thread):
     winners = '\n'.join([to_table_line_item(s) for s in upset_thread.winners])
     losers = '\n'.join([to_table_line_item(s) for s in upset_thread.losers])
     notables = '\n'.join([to_table_line_item(s, is_include_upset_factor=False) for s in upset_thread.notables])
-    dqs = '\\\n'.join([to_dq_line_item(s) for s in upset_thread.dqs])
+    dqs = '  \n'.join([to_dq_line_item(s) for s in upset_thread.dqs])
     return f"""
 # Winners
 |  |  |  |  |

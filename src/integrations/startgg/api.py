@@ -1,12 +1,9 @@
 import requests
-import os
-from dotenv import load_dotenv
-from src.startgg.query import events_query, characters_query
+import settings
+from src.integrations.startgg.query import events_query, characters_query
 
 
-load_dotenv()
-
-start_gg_api_key = os.environ.get("START_GG_API_KEY")
+start_gg_api_key = settings.START_GG_API_KEY
 api_url = "https://api.start.gg/gql/alpha"
 
 

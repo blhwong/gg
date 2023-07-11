@@ -1,5 +1,5 @@
-from startgg.api import get_characters
-from domain import UpsetThread
+from src.integrations.startgg.api import get_characters
+from src.domain import UpsetThread
 
 
 class SetsInMemoryDb:
