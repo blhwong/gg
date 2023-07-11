@@ -1,10 +1,13 @@
 from domain import Set, Entrant, Game, Selection, Character
-from src.data.db import CharactersInMemoryDb
+from src.service import get_character_name
 import inflect
+from datetime import datetime
+from pytz import timezone, utc
 
 p = inflect.engine()
 
-characters_db = CharactersInMemoryDb()
+
+DATETIME_FORMAT = '%m/%d/%y %H:%M %Z'
 
 
 def to_domain_set(s):
@@ -47,7 +50,7 @@ def to_domain_game(game):
 def to_domain_character(selectionType, value):
     if selectionType != "CHARACTER":
         return None
-    return Character(value, characters_db.get_character_name(value))
+    return Character(value, get_character_name(value))
 
 
 def to_domain_selection(selection):
@@ -120,6 +123,9 @@ def to_markdown(upset_thread):
     losers = '  \n'.join([to_line_item(s) for s in upset_thread.losers])
     notables = '  \n'.join([to_line_item(s) for s in upset_thread.notables])
     dqs = '  \n'.join([to_dq_line_item(s) for s in upset_thread.dqs])
+    t = datetime.now(tz=utc)
+    t = t.astimezone(timezone('US/Pacific'))
+    t = t.strftime(DATETIME_FORMAT)
     return f"""
 # Winners
 {winners}
@@ -132,6 +138,8 @@ def to_markdown(upset_thread):
 
 # DQs
 {dqs}
+
+*Last updated at: {t}*
 """
 
 
