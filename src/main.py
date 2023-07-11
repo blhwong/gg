@@ -1,24 +1,28 @@
-from api import get_event
+from src.startgg.api import get_event
 from mapper import to_domain_set, to_markdown
 from db import SetsInMemoryDb
+from time import sleep
 
-slug = 'tournament/high-rez/event/smash-ultimate-singles-day-two'
+# slug = 'tournament/high-rez/event/smash-ultimate-singles-day-two'
+slug = 'tournament/battle-of-bc-5-5/event/ultimate-singles'
 sets = []
 page = 1
-fetch = True
 
 sets_db = SetsInMemoryDb()
 
-while fetch:
+while True:
+    print(page)
     res = get_event(slug, page)
     if 'errors' in res:
         print(res['errors'])
         break
     total_pages = res['data']['event']['sets']['pageInfo']['totalPages']
+    # total_pages = 2
     if page > total_pages:
         break
     page += 1
     sets += [to_domain_set(s) for s in res['data']['event']['sets']['nodes']]
+    sleep(0.75)
 
 
 sets.sort(key=lambda s: -s.upset_factor)
@@ -31,4 +35,7 @@ upset_thread = sets_db.get_upset_thread({
 
 md = to_markdown(upset_thread)
 
-print(md)
+# print(md)
+
+with open('test.md', 'w') as file:
+    file.write(md)

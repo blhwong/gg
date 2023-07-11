@@ -1,3 +1,6 @@
+from startgg.api import get_characters
+
+
 class SetsInMemoryDb:
 
     def __init__(self):
@@ -38,3 +41,15 @@ class SetsInMemoryDb:
                 thread['other'].append(s)
 
         return thread
+
+
+class CharactersInMemoryDb:
+
+    def __init__(self):
+        self.storage = {}
+        res = get_characters()
+        for character in res['data']['videogame']['characters']:
+            self.storage[character['id']] = character['name']
+
+    def get_character_name(self, value):
+        return self.storage[value]

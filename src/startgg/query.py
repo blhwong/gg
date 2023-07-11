@@ -1,12 +1,4 @@
-import requests
-import os
-from dotenv import load_dotenv
-
-
-load_dotenv()
-
-
-query = """
+events_query = """
     query EventQuery(
         $slug: String 
         $filters: SetFilters
@@ -29,7 +21,19 @@ query = """
                     id
                     completedAt
                     games {
+                        id
                         winnerId
+                        orderNum
+                        selections {
+                            orderNum
+                            selectionType
+                            selectionValue
+                            entrant {
+                                id
+                                name
+                                initialSeedNum
+                            }
+                        }
                     }
                     identifier
                     displayScore
@@ -57,28 +61,17 @@ query = """
     }
 """
 
-
-start_gg_api_key = os.environ.get("START_GG_API_KEY")
-api_url = "https://api.start.gg/gql/alpha"
-
-
-def get_event(slug, page=None):
-    payload = {
-        'query': query,
-        'variables': {
-            'slug': slug,
-            'page': page,
-            'filters': {
-                'state': 3
-            },
-            'sortType': 'RECENT'
+characters_query = """
+    query CharactersQuery(
+        $slug: String
+    ) {
+        videogame(slug: $slug) {
+            id
+            slug
+            characters {
+                id
+                name
+            }
         }
     }
-    headers = {
-        'Authorization': f'Bearer {start_gg_api_key}',
-        'Content-Type': 'application/json',
-    }
-    res = requests.post(api_url, json=payload, headers=headers)
-    if res.status_code != 200:
-        res.raise_for_status()
-    return res.json()
+"""
