@@ -12,17 +12,17 @@ sets_db = SetsInMemoryDb()
 
 while True:
     print(page)
+    sleep(0.75)
     res = get_event(slug, page)
     if 'errors' in res:
         print(res['errors'])
-        break
+        continue
     total_pages = res['data']['event']['sets']['pageInfo']['totalPages']
     # total_pages = 2
     if page > total_pages:
         break
     page += 1
     sets += [to_domain_set(s) for s in res['data']['event']['sets']['nodes']]
-    sleep(0.75)
 
 
 sets.sort(key=lambda s: -s.upset_factor)

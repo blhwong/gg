@@ -1,4 +1,5 @@
 from startgg.api import get_characters
+from domain import UpsetThread
 
 
 class SetsInMemoryDb:
@@ -22,25 +23,20 @@ class SetsInMemoryDb:
     def get_upset_thread(self, upset_filter=None):
         if upset_filter is None:
             upset_filter = {}
-        thread = {
-            'winners': [],
-            'losers': [],
-            'notables': [],
-            'dqs': [],
-            'other': [],
-        }
+
+        winners, losers, notables, dqs, other = [], [], [], [], []
 
         for s in self.storage.values():
             if s.is_winners_bracket() and self.apply_filter(s, upset_filter):
-                thread['winners'].append(s)
+                winners.append(s)
             elif not s.is_winners_bracket() and self.apply_filter(s, upset_filter):
-                thread['losers'].append(s)
+                losers.append(s)
             elif s.is_dq_and_out():
-                thread['dqs'].append(s)
+                dqs.append(s)
             else:
-                thread['other'].append(s)
+                other.append(s)
 
-        return thread
+        return UpsetThread(winners, losers, notables, dqs, other)
 
 
 class CharactersInMemoryDb:

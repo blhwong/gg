@@ -87,10 +87,10 @@ def to_dq_line_item(s):
 
 
 def to_markdown(upset_thread):
-    winners = '\\\n'.join([to_line_item(s) for s in upset_thread['winners']])
-    losers = '\\\n'.join([to_line_item(s) for s in upset_thread['losers']])
-    notables = '\\\n'.join([to_line_item(s) for s in upset_thread['notables']])
-    dqs = '\\\n'.join([to_dq_line_item(s) for s in upset_thread['dqs']])
+    winners = '\\\n'.join([to_line_item(s) for s in upset_thread.winners])
+    losers = '\\\n'.join([to_line_item(s) for s in upset_thread.losers])
+    notables = '\\\n'.join([to_line_item(s) for s in upset_thread.notables])
+    dqs = '\\\n'.join([to_dq_line_item(s) for s in upset_thread.dqs])
     return f"""
 # Winners:
 {winners}

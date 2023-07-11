@@ -151,3 +151,13 @@ class Character:
     def __init__(self, value, name):
         self.value = value
         self.name = name
+
+
+class UpsetThread:
+
+    def __init__(self, winners, losers, notables, dqs, other):
+        self.winners = winners
+        self.losers = losers
+        self.notables = notables
+        self.dqs = dqs
+        self.other = other
