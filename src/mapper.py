@@ -68,13 +68,14 @@ def to_line_item(s):
     words.append(s.loser.name)
     if losers_characters:
         words.append(f'({losers_characters})')
-    losers_seed = f'(seed) {s.loser.initial_seed}'
+    losers_seed = f'(seed {s.loser.initial_seed})'
     if s.is_winners_bracket():
         words.append(losers_seed)
     else:
         words.append(f'{losers_seed}, out at {p.ordinal(s.losers_placement)}')
-    words.append('-')
-    words.append(f'Upset Factor {s.upset_factor}')
+    words.append(f'- Upset Factor {s.upset_factor}')
+    # if s.upset_factor > 0:
+    #     words.append(f'- Upset Factor {s.upset_factor}')
 
     text = ' '.join(words)
     if s.upset_factor >= 4:

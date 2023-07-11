@@ -93,6 +93,9 @@ class Set:
     def is_dq_and_out(self):
         return not self.is_winners_bracket() and self.is_dq()
 
+    def is_notable(self):
+        return self.score in ['3-2', '2-1']
+
     def get_character_selections(self, entrant_id):
         if self.games is None:
             return ''
