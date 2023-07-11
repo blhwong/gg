@@ -59,8 +59,6 @@ class SetsInMemoryDb:
                     s.loser.initial_seed,
                     is_dq=True,
                     include_dq=True,
-                    min_upset_factor=-float('inf'),
-                    max_seed=float('inf'),
             ):
                 dqs.append(s)
             elif s.is_notable() and self.apply_filter(

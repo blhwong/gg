@@ -73,9 +73,8 @@ def to_line_item(s):
         words.append(losers_seed)
     else:
         words.append(f'{losers_seed}, out at {p.ordinal(s.losers_placement)}')
-    words.append(f'- Upset Factor {s.upset_factor}')
-    # if s.upset_factor > 0:
-    #     words.append(f'- Upset Factor {s.upset_factor}')
+    if s.upset_factor > 0:
+        words.append(f'- Upset Factor {s.upset_factor}')
 
     text = ' '.join(words)
     if s.upset_factor >= 4:

@@ -42,23 +42,23 @@ Mr. E (Lucina) (seed 51) 3-2 fc | moxi (Wolf) (seed 47), out at 17th - Upset Fac
 LTE/EGO | Chronos (seed 35) 2-1 PvE | SHADIC (seed 30), out at 5th - Upset Factor 1
 
 # Notables:
-FaZe | Sparg0 (Cloud) (seed 2) 3-2 Armadillo (Lucario) (seed 58) - Upset Factor -10\
-ZETA | あcola (Steve) (seed 1) 3-2 GIANTS | Sisqui (Samus) (seed 25) - Upset Factor -9\
-ZETA | あcola (seed 1) 3-2 AITX | Dark Wizzy (seed 32) - Upset Factor -9\
-AITX | Dark Wizzy (seed 32) 2-1 Jay Are (seed 481) - Upset Factor -8\
-R2G | Kameme (seed 15) 2-1 HERO (seed 143) - Upset Factor -7\
-LG | MkLeo (seed 4) 3-2 Ouch!? (seed 29) - Upset Factor -6\
-Revo | Yoshidora (Yoshi) (seed 9) 3-2 Armadillo (Lucario) (seed 58), out at 9th - Upset Factor -5\
-LG | MkLeo (Byleth) (seed 4) 3-2 Skyjay (Incineroar) (seed 23), out at 17th - Upset Factor -5\
-Riddles (Kazuya) (seed 8) 3-2 Chag (Palutena) (seed 41), out at 13th - Upset Factor -5\
-Solary | Glutonny (seed 11) 3-2 Justice (seed 54) - Upset Factor -5\
-AITX | Dark Wizzy (Mario) (seed 32) 3-2 Dmitrii (Piranha Plant) (seed 140), out at 17th - Upset Factor -5\
-KEN (Sonic) (seed 13) 3-2 FREE AGENT | SPARKLE (Hero) (seed 81), out at 17th - Upset Factor -5\
-26R | MuteAce (seed 18) 2-1 Liam (seed 111) - Upset Factor -5\
-FTG | ミーヤー (Mr. Game & Watch) (seed 5) 3-2 Zomba (Lucina) (seed 20) - Upset Factor -4\
-BiB | Ludo (seed 49) 2-1 Dome | Jon Arbuckle (seed 208) - Upset Factor -4\
-InC | Jahzz0 (seed 40) 3-2 Adam (seed 112), out at 25th - Upset Factor -3\
-Capitancito (seed 43) 2-1 Toasted (seed 107), out at 5th - Upset Factor -3
+FaZe | Sparg0 (Cloud) (seed 2) 3-2 Armadillo (Lucario) (seed 58)\
+ZETA | あcola (Steve) (seed 1) 3-2 GIANTS | Sisqui (Samus) (seed 25)\
+ZETA | あcola (seed 1) 3-2 AITX | Dark Wizzy (seed 32)\
+AITX | Dark Wizzy (seed 32) 2-1 Jay Are (seed 481)\
+R2G | Kameme (seed 15) 2-1 HERO (seed 143)\
+LG | MkLeo (seed 4) 3-2 Ouch!? (seed 29)\
+Revo | Yoshidora (Yoshi) (seed 9) 3-2 Armadillo (Lucario) (seed 58), out at 9th\
+LG | MkLeo (Byleth) (seed 4) 3-2 Skyjay (Incineroar) (seed 23), out at 17th\
+Riddles (Kazuya) (seed 8) 3-2 Chag (Palutena) (seed 41), out at 13th\
+Solary | Glutonny (seed 11) 3-2 Justice (seed 54)\
+AITX | Dark Wizzy (Mario) (seed 32) 3-2 Dmitrii (Piranha Plant) (seed 140), out at 17th\
+KEN (Sonic) (seed 13) 3-2 FREE AGENT | SPARKLE (Hero) (seed 81), out at 17th\
+26R | MuteAce (seed 18) 2-1 Liam (seed 111)\
+FTG | ミーヤー (Mr. Game & Watch) (seed 5) 3-2 Zomba (Lucina) (seed 20)\
+BiB | Ludo (seed 49) 2-1 Dome | Jon Arbuckle (seed 208)\
+InC | Jahzz0 (seed 40) 3-2 Adam (seed 112), out at 25th\
+Capitancito (seed 43) 2-1 Toasted (seed 107), out at 5th
 
 # DQs:
 Sonix\
