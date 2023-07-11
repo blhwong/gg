@@ -82,24 +82,26 @@ def to_line_item(s):
     return text
 
 
-def to_table_line_item(s, is_include_placement=False, is_include_upset_factor=True):
+def to_table_line_item(s, is_include_upset_factor=True):
     winners_characters, losers_characters = s.get_winner_character_selections(), s.get_loser_character_selections()
     winner_name = s.winner.name.replace('|', '\|')
-    winner = [f'{winner_name} (seed {s.winner.initial_seed})']
+    winner = [f'{winner_name}']
     if winners_characters:
-        winner.append(winners_characters)
+        winner.append(f'({winners_characters})')
+    winner.append(f'(seed {s.winner.initial_seed})')
 
     loser_name = s.loser.name.replace('|', '\|')
-    loser = [f'{loser_name} (seed {s.loser.initial_seed})']
+    loser = [f'{loser_name}']
     if losers_characters:
-        loser.append(losers_characters)
+        loser.append(f'({losers_characters})')
+    if not s.is_winners_bracket():
+        loser.append(f'(seed {s.loser.initial_seed}), out at {p.ordinal(s.losers_placement)}')
+    else:
+        loser.append(f'(seed {s.loser.initial_seed})')
     score = s.score
-    upset_factor = s.upset_factor
-    placement = f'out at {p.ordinal(s.losers_placement)}' if not s.is_winners_bracket() else ''
+    upset_factor = f'Upset Factor {s.upset_factor}'
 
-    columns = ['<br>'.join(winner), score, '<br>'.join(loser)]
-    if is_include_placement:
-        columns.append(placement)
+    columns = [' '.join(winner), score, ' '.join(loser)]
     if is_include_upset_factor:
         columns.append(str(upset_factor))
 
@@ -135,23 +137,23 @@ def to_markdown(upset_thread):
 
 def to_markdown_table(upset_thread):
     winners = '\n'.join([to_table_line_item(s) for s in upset_thread.winners])
-    losers = '\n'.join([to_table_line_item(s, True) for s in upset_thread.losers])
-    notables = '\n'.join([to_table_line_item(s, True, False) for s in upset_thread.notables])
+    losers = '\n'.join([to_table_line_item(s) for s in upset_thread.losers])
+    notables = '\n'.join([to_table_line_item(s, is_include_upset_factor=False) for s in upset_thread.notables])
     dqs = '\\\n'.join([to_dq_line_item(s) for s in upset_thread.dqs])
     return f"""
 # Winners
-| Winner | Score | Loser | Upset Factor |
+|  |  |  |  |
 |------|:-----:|----------|:-------:|
 {winners}
 
 # Losers
-| Winner | Score | Loser | Placement | Upset Factor |
-|------|:-----:|----------|-------|:--------:|
+|  |  |  |  |
+|------|:-----:|----------|:--------:|
 {losers}
 
 # Notables
-| Winner | Score | Loser | Placement |
-|------|:-----:|----------|------|
+|  |  |  |
+|------|:-----:|----------|
 {notables}
 
 # DQs
