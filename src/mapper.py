@@ -82,6 +82,33 @@ def to_line_item(s):
     return text
 
 
+def to_table_line_item(s, is_include_placement=False, is_include_upset_factor=True):
+    winners_characters, losers_characters = s.get_winner_character_selections(), s.get_loser_character_selections()
+    winner_name = s.winner.name.replace('|', '\|')
+    winner = [f'{winner_name} (seed {s.winner.initial_seed})']
+    if winners_characters:
+        winner.append(winners_characters)
+
+    loser_name = s.loser.name.replace('|', '\|')
+    loser = [f'{loser_name} (seed {s.loser.initial_seed})']
+    if losers_characters:
+        loser.append(losers_characters)
+    score = s.score
+    upset_factor = s.upset_factor
+    placement = f'out at {p.ordinal(s.losers_placement)}' if not s.is_winners_bracket() else ''
+
+    columns = ['<br>'.join(winner), score, '<br>'.join(loser)]
+    if is_include_placement:
+        columns.append(placement)
+    if is_include_upset_factor:
+        columns.append(str(upset_factor))
+
+    if s.upset_factor >= 4:
+        return f"|**{'**|**'.join(columns)}**|"
+
+    return f"|{'|'.join(columns)}|"
+
+
 def to_dq_line_item(s):
     return s.loser.name
 
@@ -92,15 +119,41 @@ def to_markdown(upset_thread):
     notables = '\\\n'.join([to_line_item(s) for s in upset_thread.notables])
     dqs = '\\\n'.join([to_dq_line_item(s) for s in upset_thread.dqs])
     return f"""
-# Winners:
+# Winners
 {winners}
 
-# Losers:
+# Losers
 {losers}
 
-# Notables:
+# Notables
 {notables}
 
-# DQs:
+# DQs
+{dqs}
+"""
+
+
+def to_markdown_table(upset_thread):
+    winners = '\n'.join([to_table_line_item(s) for s in upset_thread.winners])
+    losers = '\n'.join([to_table_line_item(s, True) for s in upset_thread.losers])
+    notables = '\n'.join([to_table_line_item(s, True, False) for s in upset_thread.notables])
+    dqs = '\\\n'.join([to_dq_line_item(s) for s in upset_thread.dqs])
+    return f"""
+# Winners
+| Winner | Score | Loser | Upset Factor |
+|------|:-----:|----------|:-------:|
+{winners}
+
+# Losers
+| Winner | Score | Loser | Placement | Upset Factor |
+|------|:-----:|----------|-------|:--------:|
+{losers}
+
+# Notables
+| Winner | Score | Loser | Placement |
+|------|:-----:|----------|------|
+{notables}
+
+# DQs
 {dqs}
 """

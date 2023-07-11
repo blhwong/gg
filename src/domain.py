@@ -78,7 +78,7 @@ class Set:
         if games is None:
             score = display_score
             score = score.replace(winner.name, '').replace(loser.name, '').replace(' ', '')
-            if score in ['0-3', '1-3', '2-3']:
+            if score in ['0-2', '0-3', '1-2', '1-3', '2-3']:
                 score = score[::-1]
             return score
         diff = total_games - len(games)
