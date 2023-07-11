@@ -7,7 +7,7 @@ from pytz import timezone, utc
 p = inflect.engine()
 
 
-DATETIME_FORMAT = '%m/%d/%y %H:%M %Z'
+DATETIME_FORMAT = '%m/%d/%y %I:%M %p %Z'
 
 
 def to_domain_set(s):
