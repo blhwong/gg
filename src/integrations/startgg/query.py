@@ -8,6 +8,7 @@ events_query = """
         event(slug: $slug) {
             id
             slug
+            updatedAt
             sets(filters: $filters page: $page sortType: $sortType) {
                 pageInfo {
                     total

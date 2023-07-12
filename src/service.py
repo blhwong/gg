@@ -1,10 +1,11 @@
+from time import time
 from src.domain import UpsetThread
-from src.data.redis_db import AppStateRedisDb, CharactersRedisDb
+from src.data.redis_db import CharactersRedisDb, EventsRedisDb
 from src.integrations.startgg.api import get_characters
 from src.integrations.reddit.api import reddit
 
 
-app_state_redis_db = AppStateRedisDb()
+events_redis_db = EventsRedisDb()
 characters_redis_db = CharactersRedisDb()
 
 
@@ -78,28 +79,25 @@ def get_upset_thread(sets):
 
 
 def get_character_name(character_key):
-    if not app_state_redis_db.is_characters_loaded():
+    if not characters_redis_db.is_characters_loaded():
         res = get_characters()
         characters_redis_db.add_characters(res['data']['videogame']['characters'])
-        app_state_redis_db.set_is_character_loaded(1)
+        characters_redis_db.set_is_characters_loaded(1)
     return characters_redis_db.get_character_name(character_key)
 
 
-def submit_to_subreddit(subreddit_name, title, md):
-    submission_id = app_state_redis_db.get_submission_id()
+def submit_to_subreddit(slug, subreddit_name, title, md):
+    submission_id = events_redis_db.get_submission_id(slug)
+    events_redis_db.set_last_updated_date(slug, int(time()))
     if submission_id:
+        print('Editing existing post')
         submission = reddit.submission(submission_id)
         submission.edit(md)
         return
     if not title:
         raise "Title is required."
+    print('Creating new post')
     subreddit = reddit.subreddit(subreddit_name)
     submission = subreddit.submit(title=title, selftext=md)
-    app_state_redis_db.set_submission_id(submission.id)
-
-
-def init_app_state(event_slug):
-    if app_state_redis_db.get_event_slug() != event_slug:
-        print('Clearing app state')
-        app_state_redis_db.clear_app_state()
-    app_state_redis_db.set_event_slug(event_slug)
+    events_redis_db.set_submission_id(slug, submission.id)
+    events_redis_db.set_created_at(slug, int(time()))
