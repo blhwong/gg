@@ -47,7 +47,7 @@ add_sets(slug, upset_thread)
 saved_upset_thread = get_upset_thread_redis(slug)
 md = to_markdown(saved_upset_thread)
 
-with open('output/test.md', 'w') as file:
+with open(f'output/{title}.md', 'w+') as file:
     file.write(md)
 
 submit_to_subreddit(slug, subreddit, title, md)
