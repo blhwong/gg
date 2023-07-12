@@ -1,6 +1,5 @@
 import json
 import argparse
-import settings
 from logger import logging
 from src.integrations.startgg.api import get_event
 from src.mapper.markdown_mapper import to_markdown
@@ -16,6 +15,7 @@ parser.add_argument('-s', '--slug')
 parser.add_argument('-t', '--title')
 parser.add_argument('-sr', '--subreddit')
 parser.add_argument('-f', '--file')
+parser.add_argument('-fm', '--frequency_minutes', type=int)
 
 args = parser.parse_args()
 
@@ -70,4 +70,8 @@ def process(slug, title, subreddit, file):
         logger.info('Skipping post to subreddit')
 
 
-process(args.slug, args.title, args.subreddit, args.file)
+while True:
+    logger.info('Starting...')
+    process(args.slug, args.title, args.subreddit, args.file)
+    logger.info('Done!')
+    sleep(args.frequency_minutes * 60)
