@@ -1,13 +1,20 @@
 import logging
+from datetime import datetime
+from pytz import timezone, utc
+
 
 fmt = 'datetime=%(asctime)s - name=%(name)s - level=%(levelname)s - msg=%(message)s'
 date_format = '%Y-%m-%dT%H:%M:%S%Z'
+
+t = datetime.now(tz=utc)
+t = t.astimezone(timezone('US/Central'))
+t = t.strftime('%Y-%m-%dT%H:%M')
 
 logging.basicConfig(
     level=logging.DEBUG,
     format=fmt,
     datefmt=date_format,
-    filename='logs/gg.log',
+    filename=f'logs/{t}_gg_logs.log',
     filemode='w',
 )
 
