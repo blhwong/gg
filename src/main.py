@@ -45,7 +45,7 @@ sets.sort(key=lambda s: -s.upset_factor)
 upset_thread = get_upset_thread(sets)
 add_sets(slug, upset_thread)
 saved_upset_thread = get_upset_thread_redis(slug)
-md = to_markdown(saved_upset_thread)
+md = to_markdown(saved_upset_thread, slug)
 
 with open(f'output/{title}.md', 'w+') as file:
     file.write(md)

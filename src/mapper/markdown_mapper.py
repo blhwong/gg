@@ -35,7 +35,7 @@ def to_dq_line_item(item):
     return item.losers_name
 
 
-def to_markdown(upset_thread):
+def to_markdown(upset_thread, slug):
     winners = '  \n'.join([to_line_item(s) for s in upset_thread.winners])
     losers = '  \n'.join([to_line_item(s) for s in upset_thread.losers])
     notables = '  \n'.join([to_line_item(s) for s in upset_thread.notables])
@@ -43,7 +43,8 @@ def to_markdown(upset_thread):
     t = datetime.now(tz=utc)
     t = t.astimezone(timezone('US/Pacific'))
     t = t.strftime(DATETIME_FORMAT)
-    return f"""
+    return f"""[Bracket](https://start.gg/{slug})
+    
 # Winners
 {winners}
 
