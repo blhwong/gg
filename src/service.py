@@ -5,6 +5,10 @@ from src.integrations.startgg.api import get_characters
 from src.integrations.reddit.api import reddit
 from src.data.redis_mapper import domain_to_redis_set
 from src.mapper.upset_thread_mapper import set_to_upset_thread_item, redis_set_to_upset_thread_item
+from logger import logging
+
+
+logger = logging.getLogger(__name__)
 
 
 events_redis_db = EventsRedisDb()
@@ -94,13 +98,13 @@ def submit_to_subreddit(slug, subreddit_name, title, md):
     submission_id = events_redis_db.get_submission_id(slug)
     events_redis_db.set_last_updated_date(slug, int(time()))
     if submission_id:
-        print('Editing existing post')
+        logger.info('Editing existing post')
         submission = reddit.submission(submission_id)
         submission.edit(md)
         return
     if not title:
         raise "Title is required."
-    print('Creating new post')
+    logger.info('Creating new post')
     subreddit = reddit.subreddit(subreddit_name)
     submission = subreddit.submit(title=title, selftext=md)
     events_redis_db.set_submission_id(slug, submission.id)

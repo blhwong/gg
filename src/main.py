@@ -1,12 +1,15 @@
 import json
 import argparse
 import settings
+from logger import logging
 from src.integrations.startgg.api import get_event
 from src.mapper.markdown_mapper import to_markdown
 from src.mapper.set_mapper import to_domain_set
 from time import sleep
 from requests.exceptions import HTTPError
 from src.service import get_upset_thread, submit_to_subreddit, add_sets, get_upset_thread_redis
+
+logger = logging.getLogger(__name__)
 
 parser = argparse.ArgumentParser()
 parser.add_argument('-s', '--slug')
@@ -27,22 +30,22 @@ def process(slug, title, subreddit, file):
     sets = []
     page = 1
     if file:
-        print('Using file data')
+        logger.info('Using file data')
         with open('src/data/startgg_data.json', 'r') as data:
             sets += [to_domain_set(s) for s in json.load(data)]
         data.close()
     else:
-        print('Fetching data from startgg')
+        logger.info('Fetching data from startgg')
         while True:
-            print(page)
+            logger.debug(f'Fetching page {page}')
             sleep(0.75)
             try:
                 res = get_event(slug, page)
             except HTTPError as e:
-                print(e)
+                logger.warn(e)
                 continue
             if 'errors' in res:
-                print(res['errors'])
+                logger.error(res['errors'])
                 break
             total_pages = res['data']['event']['sets']['pageInfo']['totalPages']
             if page > total_pages:
@@ -56,15 +59,15 @@ def process(slug, title, subreddit, file):
     saved_upset_thread = get_upset_thread_redis(slug)
     md = to_markdown(saved_upset_thread, slug)
 
-    with open(f'output'
-              f'/{title}.md', 'w+') as file:
+    with open(f'output/{title}.md', 'w+') as file:
+        logger.info('Saving md to output')
         file.write(md)
 
     if subreddit:
-        print(f'Posting to subreddit {subreddit}')
+        logger.info(f'Posting to subreddit {subreddit}')
         submit_to_subreddit(slug, subreddit, title, md)
     else:
-        print('Skipping post to subreddit')
+        logger.info('Skipping post to subreddit')
 
 
 process(args.slug, args.title, args.subreddit, args.file)
