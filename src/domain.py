@@ -164,3 +164,35 @@ class UpsetThread:
         self.notables = notables
         self.dqs = dqs
         self.other = other
+
+
+class UpsetThreadItem:
+
+    def __repr__(self):
+        return json.dumps(self, default=lambda o: o.__dict__, sort_keys=True, indent=4)
+
+    def __init__(
+            self,
+            identifier,
+            winners_name,
+            winners_characters,
+            winners_seed,
+            score,
+            losers_name,
+            losers_characters,
+            is_winners_bracket,
+            losers_seed,
+            losers_placement,
+            upset_factor,
+    ):
+        self.id = identifier
+        self.winners_name = winners_name
+        self.winners_characters = winners_characters
+        self.winners_seed = winners_seed
+        self.score = score
+        self.losers_name = losers_name
+        self.losers_characters = losers_characters
+        self.is_winners_bracket = is_winners_bracket
+        self.losers_seed = losers_seed
+        self.losers_placement = losers_placement
+        self.upset_factor = upset_factor

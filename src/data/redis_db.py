@@ -41,3 +41,20 @@ class EventsRedisDb:
 
     def set_submission_id(self, slug, value):
         return r.hset(f'{self.hash_key_prefix}:{slug}', "submission_id", value)
+
+
+class EventSetsRedisDb:
+
+    @staticmethod
+    def get_key(slug):
+        return f'event:{slug}_sets'
+
+    def add_sets(self, slug, redis_set_mapping):
+        for set_id, s in redis_set_mapping.items():
+            self.add_set(slug, set_id, s)
+
+    def add_set(self, slug, set_id, redis_set):
+        r.hset(self.get_key(slug), set_id, redis_set)
+
+    def get_sets(self, slug):
+        return r.hgetall(self.get_key(slug))

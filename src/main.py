@@ -2,10 +2,11 @@ import json
 
 import settings
 from src.integrations.startgg.api import get_event
-from mapper import to_domain_set, to_markdown
+from src.mapper.markdown_mapper import to_markdown
+from src.mapper.set_mapper import to_domain_set
 from time import sleep
 from requests.exceptions import HTTPError
-from src.service import get_upset_thread, submit_to_subreddit
+from src.service import get_upset_thread, submit_to_subreddit, add_sets, get_upset_thread_redis
 
 slug = 'tournament/battle-of-bc-5-5/event/ultimate-singles'
 title = 'Battle of BC 5 Ultimate Singles Upset Thread'
@@ -14,7 +15,7 @@ title = 'Battle of BC 5 Ultimate Singles Upset Thread'
 subreddit = f'u_{settings.REDDIT_USERNAME}'
 sets = []
 page = 1
-use_cache = False
+use_cache = True
 
 
 if use_cache:
@@ -42,9 +43,13 @@ else:
 
 sets.sort(key=lambda s: -s.upset_factor)
 upset_thread = get_upset_thread(sets)
-md = to_markdown(upset_thread)
+add_sets(slug, upset_thread)
+saved_upset_thread = get_upset_thread_redis(slug)
+md = to_markdown(saved_upset_thread)
 
 with open('output/test.md', 'w') as file:
     file.write(md)
 
 submit_to_subreddit(slug, subreddit, title, md)
+
+# print(get_sets(slug))

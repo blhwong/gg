@@ -1,12 +1,15 @@
 from time import time
 from src.domain import UpsetThread
-from src.data.redis_db import CharactersRedisDb, EventsRedisDb
+from src.data.redis_db import CharactersRedisDb, EventsRedisDb, EventSetsRedisDb
 from src.integrations.startgg.api import get_characters
 from src.integrations.reddit.api import reddit
+from src.data.redis_mapper import domain_to_redis_set
+from src.mapper.upset_thread_mapper import set_to_upset_thread_item, redis_set_to_upset_thread_item
 
 
 events_redis_db = EventsRedisDb()
 characters_redis_db = CharactersRedisDb()
+event_sets_redis_db = EventSetsRedisDb()
 
 
 def apply_filter(
@@ -29,7 +32,6 @@ def apply_filter(
 
 
 def get_upset_thread(sets):
-
     winners, losers, notables, dqs, other = [], [], [], [], []
 
     for s in sets:
@@ -72,10 +74,12 @@ def get_upset_thread(sets):
             other.append(s)
 
     return UpsetThread(
-        winners,
-        losers,
-        sorted(notables, key=lambda x: x.upset_factor),
-        dqs, other)
+        [set_to_upset_thread_item(s) for s in winners],
+        [set_to_upset_thread_item(s) for s in losers],
+        [set_to_upset_thread_item(s) for s in sorted(notables, key=lambda x: x.upset_factor)],
+        [set_to_upset_thread_item(s) for s in dqs],
+        [set_to_upset_thread_item(s) for s in other],
+    )
 
 
 def get_character_name(character_key):
@@ -101,3 +105,44 @@ def submit_to_subreddit(slug, subreddit_name, title, md):
     submission = subreddit.submit(title=title, selftext=md)
     events_redis_db.set_submission_id(slug, submission.id)
     events_redis_db.set_created_at(slug, int(time()))
+
+
+def add_sets(slug, upset_thread):
+    redis_set_mapping = {}
+    for s in upset_thread.winners:
+        redis_set_mapping[f'winners:{s.id}'] = domain_to_redis_set(s)
+    for s in upset_thread.losers:
+        redis_set_mapping[f'losers:{s.id}'] = domain_to_redis_set(s)
+    for s in upset_thread.notables:
+        redis_set_mapping[f'notables:{s.id}'] = domain_to_redis_set(s)
+    for s in upset_thread.dqs:
+        redis_set_mapping[f'dqs:{s.id}'] = domain_to_redis_set(s)
+    for s in upset_thread.other:
+        redis_set_mapping[f'other:{s.id}'] = domain_to_redis_set(s)
+    event_sets_redis_db.add_sets(slug, redis_set_mapping)
+
+
+def get_upset_thread_redis(slug):
+    sets = event_sets_redis_db.get_sets(slug)
+    winners, losers, notables, dqs, other = [], [], [], [], []
+    for set_key, redis_set in sets.items():
+        category, set_id = set_key.split(':')
+        upset_thread_item = redis_set_to_upset_thread_item(set_id, redis_set)
+        if category == 'winners':
+            winners.append(upset_thread_item)
+        elif category == 'losers':
+            losers.append(upset_thread_item)
+        elif category == 'notables':
+            notables.append(upset_thread_item)
+        elif category == 'dqs':
+            dqs.append(upset_thread_item)
+        else:
+            other.append(upset_thread_item)
+
+    return UpsetThread(
+        sorted(winners, key=lambda x: -x.upset_factor),
+        sorted(losers, key=lambda x: -x.upset_factor),
+        sorted(notables, key=lambda x: x.upset_factor),
+        sorted(dqs, key=lambda x: -x.upset_factor),
+        other,
+    )
