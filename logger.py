@@ -1,21 +1,29 @@
-import logging
+# import logging
+import logging.handlers
 
 
-fmt = 'datetime=%(asctime)s - name=%(name)s - level=%(levelname)s - msg=%(message)s'
-date_format = '%Y-%m-%dT%H:%M:%S%Z'
-
+LOG_FORMAT = 'datetime=%(asctime)s - name=%(name)s - level=%(levelname)s - msg=%(message)s'
+DATE_FORMAT = '%Y-%m-%dT%H:%M:%S%Z'
+LOG_FILENAME = 'logs/gg_logs.log'
+LOG_FILE_SIZE = 10*1024*1024
 
 logging.basicConfig(
     level=logging.DEBUG,
-    format=fmt,
-    datefmt=date_format,
-    filename=f'logs/gg_logs.log',
+    format=LOG_FORMAT,
+    datefmt=DATE_FORMAT,
+    filename=LOG_FILENAME,
     filemode='w',
 )
 
-console = logging.StreamHandler()
-console.setLevel(logging.INFO)
+console_handler = logging.StreamHandler()
+console_handler.setLevel(logging.INFO)
 
-formatter = logging.Formatter(fmt, datefmt=date_format)
-console.setFormatter(formatter)
-logging.getLogger('').addHandler(console)
+rotating_handler = logging.handlers.RotatingFileHandler(LOG_FILENAME, maxBytes=LOG_FILE_SIZE, backupCount=5)
+
+formatter = logging.Formatter(LOG_FORMAT, datefmt=DATE_FORMAT)
+console_handler.setFormatter(formatter)
+
+logger = logging.getLogger('')
+
+logger.addHandler(console_handler)
+logger.addHandler(rotating_handler)
