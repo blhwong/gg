@@ -5,16 +5,16 @@ def from_redis_set(value):
     return json.loads(value)
 
 
-def domain_to_redis_set(s):
+def upset_thread_item_to_redis_set(item):
     return json.dumps([
-        s.winners_name,
-        s.winners_characters,
-        s.winners_seed,
-        s.score,
-        s.losers_name,
-        s.losers_characters,
-        s.is_winners_bracket,
-        s.losers_seed,
-        s.losers_placement,
-        s.upset_factor,
+        item.winners_name,
+        item.winners_characters,
+        item.winners_seed,
+        item.score,
+        item.losers_name,
+        item.losers_characters,
+        item.is_winners_bracket,
+        item.losers_seed,
+        item.losers_placement,
+        item.upset_factor,
     ])

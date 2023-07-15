@@ -1,7 +1,11 @@
 import redis
+import settings
 
-
-r = redis.Redis(decode_responses=True)
+r = redis.Redis(
+    decode_responses=True,
+    host=settings.REDIS_HOST,
+    port=settings.REDIS_PORT,
+)
 
 
 class CharactersRedisDb:

@@ -1,4 +1,4 @@
-from src.data.redis_mapper import domain_to_redis_set, from_redis_set
+from src.data.redis_mapper import upset_thread_item_to_redis_set, from_redis_set
 from src.domain import UpsetThreadItem
 
 
@@ -15,7 +15,7 @@ s = UpsetThreadItem(
     9,
     6,
 )
-redis_set = domain_to_redis_set(s)
+redis_set = upset_thread_item_to_redis_set(s)
 split = from_redis_set(redis_set)
 
 

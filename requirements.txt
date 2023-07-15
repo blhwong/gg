@@ -7,3 +7,4 @@ redis
 pytz
 coverage
 pytest-mock
+pytest-env

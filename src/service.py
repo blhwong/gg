@@ -3,7 +3,7 @@ from src.domain import UpsetThread
 from src.data.redis_db import CharactersRedisDb, EventsRedisDb, EventSetsRedisDb
 from src.integrations.startgg.api import get_characters
 from src.integrations.reddit.api import reddit
-from src.data.redis_mapper import domain_to_redis_set
+from src.data.redis_mapper import upset_thread_item_to_redis_set
 from src.mapper.upset_thread_mapper import set_to_upset_thread_item, redis_set_to_upset_thread_item
 from logger import logging
 
@@ -114,15 +114,15 @@ def submit_to_subreddit(slug, subreddit_name, title, md):
 def add_sets(slug, upset_thread):
     redis_set_mapping = {}
     for s in upset_thread.winners:
-        redis_set_mapping[f'winners:{s.id}'] = domain_to_redis_set(s)
+        redis_set_mapping[f'winners:{s.id}'] = upset_thread_item_to_redis_set(s)
     for s in upset_thread.losers:
-        redis_set_mapping[f'losers:{s.id}'] = domain_to_redis_set(s)
+        redis_set_mapping[f'losers:{s.id}'] = upset_thread_item_to_redis_set(s)
     for s in upset_thread.notables:
-        redis_set_mapping[f'notables:{s.id}'] = domain_to_redis_set(s)
+        redis_set_mapping[f'notables:{s.id}'] = upset_thread_item_to_redis_set(s)
     for s in upset_thread.dqs:
-        redis_set_mapping[f'dqs:{s.id}'] = domain_to_redis_set(s)
+        redis_set_mapping[f'dqs:{s.id}'] = upset_thread_item_to_redis_set(s)
     for s in upset_thread.other:
-        redis_set_mapping[f'other:{s.id}'] = domain_to_redis_set(s)
+        redis_set_mapping[f'other:{s.id}'] = upset_thread_item_to_redis_set(s)
     event_sets_redis_db.add_sets(slug, redis_set_mapping)
 
 
@@ -131,7 +131,7 @@ def get_upset_thread_redis(slug):
     winners, losers, notables, dqs, other = [], [], [], [], []
     for set_key, redis_set in sets.items():
         category, set_id = set_key.split(':')
-        upset_thread_item = redis_set_to_upset_thread_item(set_id, redis_set)
+        upset_thread_item = redis_set_to_upset_thread_item(int(set_id), redis_set)
         if category == 'winners':
             winners.append(upset_thread_item)
         elif category == 'losers':
