@@ -5,3 +5,5 @@ inflect
 praw
 redis
 pytz
+coverage
+pytest-mock

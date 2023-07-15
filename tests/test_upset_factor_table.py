@@ -11,3 +11,7 @@ def test_get_upset_factor_2():
 
 def test_get_upset_factor_3():
     assert upset_factor_table.get_upset_factor(17, 24) == 0
+
+
+def test_get_upset_factor_4():
+    assert upset_factor_table.get_upset_factor(1024, -1) == 19

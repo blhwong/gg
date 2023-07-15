@@ -33,9 +33,6 @@ upset_factor_table = UpsetFactorTable()
 
 class Set:
 
-    def __repr__(self):
-        return json.dumps(self, default=lambda o: o.__dict__, sort_keys=True, indent=4)
-
     def __init__(
             self,
             identifier,
@@ -116,9 +113,6 @@ class Set:
 
 class Entrant:
 
-    def __repr__(self):
-        return json.dumps(self, default=lambda o: o.__dict__, sort_keys=True, indent=4)
-
     def __init__(self, identifier, name, initial_seed):
         self.id = identifier
         self.name = name
@@ -126,9 +120,6 @@ class Entrant:
 
 
 class Game:
-
-    def __repr__(self):
-        return json.dumps(self, default=lambda o: o.__dict__, sort_keys=True, indent=4)
 
     def __init__(self, identifier, winner_id, selections):
         self.id = identifier
@@ -138,9 +129,6 @@ class Game:
 
 class Selection:
 
-    def __repr__(self):
-        return json.dumps(self, default=lambda o: o.__dict__, sort_keys=True, indent=4)
-
     def __init__(self, entrant, character):
         self.entrant = entrant
         self.character = character
@@ -148,15 +136,15 @@ class Selection:
 
 class Character:
 
-    def __repr__(self):
-        return json.dumps(self, default=lambda o: o.__dict__, sort_keys=True, indent=4)
-
     def __init__(self, value, name):
         self.value = value
         self.name = name
 
 
 class UpsetThread:
+
+    def __repr__(self):
+        return json.dumps(self, default=lambda o: o.__dict__, sort_keys=True, indent=4)
 
     def __init__(self, winners, losers, notables, dqs, other):
         self.winners = winners
@@ -170,6 +158,21 @@ class UpsetThreadItem:
 
     def __repr__(self):
         return json.dumps(self, default=lambda o: o.__dict__, sort_keys=True, indent=4)
+
+    def __eq__(self, item):
+        return all([
+            self.id == item.id,
+            self.winners_name == item.winners_name,
+            self.winners_characters == item.winners_characters,
+            self.winners_seed == item.winners_seed,
+            self.score == item.score,
+            self.losers_name == item.losers_name,
+            self.losers_characters == item.losers_characters,
+            self.is_winners_bracket == item.is_winners_bracket,
+            self.losers_seed == item.losers_seed,
+            self.losers_placement == item.losers_placement,
+            self.upset_factor == item.upset_factor,
+        ])
 
     def __init__(
             self,

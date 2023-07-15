@@ -108,3 +108,48 @@ def test_get_characters_selections():
     )
 
     assert s.get_character_selections(12687800) == ''
+
+
+def test_is_dq_and_out_1():
+    s = Set(
+        60482457,
+        'Zomba 0 - LG | Tweek 3',
+        None,
+        3,
+        -6,
+        9,
+        12687800,
+        [e1, e2],
+        None,
+    )
+    assert not s.is_dq_and_out()
+
+
+def test_is_dq_and_out_2():
+    s = Set(
+        60482457,
+        'DQ',
+        None,
+        3,
+        -6,
+        9,
+        12687800,
+        [e1, e2],
+        None,
+    )
+    assert s.is_dq_and_out()
+
+
+def test_is_notable_1():
+    s = Set(
+        60482457,
+        'Zomba 2 - LG | Tweek 3',
+        None,
+        3,
+        -6,
+        9,
+        12687800,
+        [e1, e2],
+        None,
+    )
+    assert s.is_notable()
