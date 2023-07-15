@@ -1,5 +1,6 @@
-# from src.data.redis_db import EventsRedisDb
-from src.domain import Set, Entrant, Selection, Character
+import pytest
+from unittest.mock import Mock
+from src.domain import Set, Entrant, Selection, Character, UpsetThread
 from src.service import get_upset_thread, submit_to_subreddit, add_sets, get_upset_thread_redis, get_character_name
 from src.mapper.upset_thread_mapper import set_to_upset_thread_item
 from src.data.redis_mapper import upset_thread_item_to_redis_set
@@ -81,12 +82,62 @@ def test_get_upset_thread_1():
     assert set_to_upset_thread_item(others_set) in ut.other
 
 
-def test_submit_to_subreddit_1():
-    pass
+def test_submit_to_subreddit_1(mocker):
+    mocker.patch('src.service.events_redis_db.get_submission_id', return_value='1234')
+    mock_set_last_updated_date = mocker.patch('src.service.events_redis_db.set_last_updated_date')
+    mock = mocker.patch('src.service.reddit.submission', return_value=Mock())
+    submit_to_subreddit('slug', 'test', 'My title', 'my md')
+
+    mock.return_value.edit.assert_called_with('my md')
+    mock_set_last_updated_date.assert_called_once()
 
 
-def test_add_sets_1():
-    pass
+def test_submit_to_subreddit_2(mocker):
+    mocker.patch('src.service.events_redis_db.get_submission_id', return_value=None)
+    mock_set_last_updated_date = mocker.patch('src.service.events_redis_db.set_last_updated_date')
+    mock = mocker.patch('src.service.reddit.subreddit', return_value=Mock())
+    mock_set_submission_id = mocker.patch('src.service.events_redis_db.set_submission_id')
+    mock_set_created_at = mocker.patch('src.service.events_redis_db.set_created_at')
+    submit_to_subreddit('slug', 'test', 'My title', 'my md')
+
+    mock_set_last_updated_date.assert_called_once()
+    mock.return_value.submit.assert_called_with(title='My title', selftext='my md')
+    mock_set_submission_id.assert_called_once()
+    mock_set_created_at.assert_called_once()
+
+
+def test_submit_to_subreddit_3(mocker):
+    mocker.patch('src.service.events_redis_db.get_submission_id', return_value=None)
+    mocker.patch('src.service.events_redis_db.set_last_updated_date')
+    with pytest.raises(Exception) as exception_info:
+        submit_to_subreddit('slug', 'test', None, 'my md')
+
+    assert str(exception_info.value) == 'Title is required.'
+
+
+def test_add_sets_1(mocker):
+    winner = set_to_upset_thread_item(winners_set)
+    loser = set_to_upset_thread_item(losers_set)
+    notable = set_to_upset_thread_item(notables_set)
+    dq = set_to_upset_thread_item(dqs_set)
+    other = set_to_upset_thread_item(others_set)
+    expected_redis_sets = {
+        f'winners:{winners_set.id}': upset_thread_item_to_redis_set(winner),
+        f'losers:{losers_set.id}': upset_thread_item_to_redis_set(loser),
+        f'notables:{notables_set.id}': upset_thread_item_to_redis_set(notable),
+        f'dqs:{dqs_set.id}': upset_thread_item_to_redis_set(dq),
+        f'other:{others_set.id}': upset_thread_item_to_redis_set(other),
+    }
+    upset_thread = UpsetThread(
+        [winner],
+        [loser],
+        [notable],
+        [dq],
+        [other],
+    )
+    mock = mocker.patch('src.service.event_sets_redis_db.add_sets')
+    add_sets('test_slug', upset_thread)
+    mock.assert_called_with('test_slug', expected_redis_sets)
 
 
 def test_get_upset_thread_redis_1(mocker):
@@ -111,5 +162,16 @@ def test_get_upset_thread_redis_1(mocker):
     assert other in upset_thread.other
 
 
-def test_get_character_name_1():
-    pass
+def test_get_character_name_1(mocker):
+    mocker.patch('src.service.characters_redis_db.is_characters_loaded', return_value=False)
+    mocker.patch('src.service.get_characters', return_value={'data':{'videogame':{'characters': []}}})
+    mock_add_characters = mocker.patch('src.service.characters_redis_db.add_characters')
+    mock_set_is_characters_loaded = mocker.patch('src.service.characters_redis_db.set_is_characters_loaded')
+    mock_get_character_name = mocker.patch('src.service.characters_redis_db.get_character_name', return_value='Cloud')
+
+    name = get_character_name(1234)
+
+    assert name == 'Cloud'
+    mock_set_is_characters_loaded.assert_called_once()
+    mock_add_characters.assert_called_with([])
+    mock_get_character_name.assert_called_with(1234)

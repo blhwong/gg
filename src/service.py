@@ -103,7 +103,7 @@ def submit_to_subreddit(slug, subreddit_name, title, md):
         submission.edit(md)
         return
     if not title:
-        raise "Title is required."
+        raise Exception("Title is required.")
     logger.info('Creating new post')
     subreddit = reddit.subreddit(subreddit_name)
     submission = subreddit.submit(title=title, selftext=md)
