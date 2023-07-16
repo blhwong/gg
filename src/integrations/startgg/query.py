@@ -54,6 +54,10 @@ events_query = """
                             id
                             name
                             initialSeedNum
+                            standing {
+                                isFinal
+                                placement
+                            }
                         }
                     }
                 }

@@ -130,10 +130,12 @@ class Entrant:
     def __repr__(self):
         return json.dumps(self, default=lambda o: o.__dict__, sort_keys=True, indent=4)
 
-    def __init__(self, identifier, name, initial_seed):
+    def __init__(self, identifier, name, initial_seed, placement, is_final):
         self.id = identifier
         self.name = name
         self.initial_seed = initial_seed
+        self.placement = placement
+        self.is_final = is_final
 
 
 class Game:

@@ -4,6 +4,8 @@ from src.service import get_character_name
 
 def to_domain_set(s):
     entrants = [to_domain_entrant(slot['entrant']) for slot in s['slots']]
+    winner_id = s['winnerId']
+    l_placement = [entrant.placement for entrant in entrants if entrant.id != winner_id][0]
     games = None
     if s['games']:
         games = [to_domain_game(game) for game in s['games']]
@@ -13,8 +15,8 @@ def to_domain_set(s):
         s['fullRoundText'],
         s['totalGames'],
         s['round'],
-        s['lPlacement'],
-        s['winnerId'],
+        l_placement,
+        winner_id,
         entrants,
         games,
         s['completedAt'],
@@ -26,6 +28,8 @@ def to_domain_entrant(entrant):
         entrant['id'],
         entrant['name'],
         entrant['initialSeedNum'],
+        entrant['standing']['placement'],
+        entrant['standing']['is_final'],
     )
 
 

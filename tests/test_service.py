@@ -5,13 +5,13 @@ from src.service import get_upset_thread, submit_to_subreddit, add_sets, get_ups
 from src.mapper.upset_thread_mapper import set_to_upset_thread_item
 from src.data.redis_mapper import upset_thread_item_to_redis_set
 
-e1 = Entrant(12394650, 'LG | Tweek', 3)
-e2 = Entrant(12687800, 'Zomba', 20)
+e1 = Entrant(12394650, 'LG | Tweek', 3, 9, True)
+e2 = Entrant(12687800, 'Zomba', 20, 8, False)
 s1 = [Selection(e1, Character(1279, 'Diddy Kong')), Selection(e2, Character(1323, 'R.O.B.'))]
 s2 = [Selection(e1, Character(1777, 'Sephiroth')), Selection(e2, Character(1323, 'R.O.B.'))]
 
-e3 = Entrant(12394650, 'Rando 1', 100)
-e4 = Entrant(12687800, 'Rando 2', 200)
+e3 = Entrant(12394650, 'Rando 1', 100, 49, False)
+e4 = Entrant(12687800, 'Rando 2', 200, 65, True)
 s3 = [Selection(e1, Character(1279, 'Diddy Kong')), Selection(e2, Character(1323, 'R.O.B.'))]
 s4 = [Selection(e1, Character(1777, 'Sephiroth')), Selection(e2, Character(1323, 'R.O.B.'))]
 

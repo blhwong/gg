@@ -1,8 +1,8 @@
 from src.domain import Set, Entrant, Game, Selection, Character
 
 
-e1 = Entrant(12394650, 'LG | Tweek', 3)
-e2 = Entrant(12687800, 'Zomba', 20)
+e1 = Entrant(12394650, 'LG | Tweek', 3, 9, True)
+e2 = Entrant(12687800, 'Zomba', 20, 8, False)
 s1 = [Selection(e1, Character(1279, 'Diddy Kong')), Selection(e2, Character(1323, 'R.O.B.'))]
 s2 = [Selection(e1, Character(1777, 'Sephiroth')), Selection(e2, Character(1323, 'R.O.B.'))]
 
