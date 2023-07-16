@@ -29,7 +29,7 @@ def to_domain_entrant(entrant):
         entrant['name'],
         entrant['initialSeedNum'],
         entrant['standing']['placement'],
-        entrant['standing']['is_final'],
+        entrant['standing']['isFinal'],
     )
 
 
