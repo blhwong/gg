@@ -6,7 +6,7 @@ def redis_set_to_upset_thread_item(set_id, redis_set):
     return UpsetThreadItem(set_id, *json.loads(redis_set))
 
 
-def set_to_upset_thread_item(s):
+def set_to_upset_thread_item(s, category):
     return UpsetThreadItem(
         s.id,
         s.winner.name,
@@ -19,4 +19,6 @@ def set_to_upset_thread_item(s):
         s.loser.initial_seed,
         s.losers_placement,
         s.upset_factor,
+        s.completed_at,
+        category,
     )

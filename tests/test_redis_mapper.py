@@ -14,8 +14,10 @@ s = UpsetThreadItem(
     3,
     9,
     6,
+    123,
+    'losers'
 )
-redis_set = upset_thread_item_to_redis_set(s)
+redis_set = upset_thread_item_to_redis_set(s, 'losers')
 split = from_redis_set(redis_set)
 
 
@@ -31,4 +33,6 @@ def test_from_redis_set_1():
         3,
         9,
         6,
+        123,
+        'losers',
     ]

@@ -78,11 +78,11 @@ def get_upset_thread(sets):
             other.append(s)
 
     return UpsetThread(
-        [set_to_upset_thread_item(s) for s in winners],
-        [set_to_upset_thread_item(s) for s in losers],
-        [set_to_upset_thread_item(s) for s in sorted(notables, key=lambda x: x.upset_factor)],
-        [set_to_upset_thread_item(s) for s in dqs],
-        [set_to_upset_thread_item(s) for s in other],
+        [set_to_upset_thread_item(s, 'winners') for s in winners],
+        [set_to_upset_thread_item(s, 'losers') for s in losers],
+        [set_to_upset_thread_item(s, 'notables') for s in sorted(notables, key=lambda x: x.upset_factor)],
+        [set_to_upset_thread_item(s, 'dqs') for s in dqs],
+        [set_to_upset_thread_item(s, 'other') for s in other],
     )
 
 
@@ -114,24 +114,24 @@ def submit_to_subreddit(slug, subreddit_name, title, md):
 def add_sets(slug, upset_thread):
     redis_set_mapping = {}
     for s in upset_thread.winners:
-        redis_set_mapping[f'winners:{s.id}'] = upset_thread_item_to_redis_set(s)
+        redis_set_mapping[s.id] = upset_thread_item_to_redis_set(s, 'winners')
     for s in upset_thread.losers:
-        redis_set_mapping[f'losers:{s.id}'] = upset_thread_item_to_redis_set(s)
+        redis_set_mapping[s.id] = upset_thread_item_to_redis_set(s, 'losers')
     for s in upset_thread.notables:
-        redis_set_mapping[f'notables:{s.id}'] = upset_thread_item_to_redis_set(s)
+        redis_set_mapping[s.id] = upset_thread_item_to_redis_set(s, 'notables')
     for s in upset_thread.dqs:
-        redis_set_mapping[f'dqs:{s.id}'] = upset_thread_item_to_redis_set(s)
+        redis_set_mapping[s.id] = upset_thread_item_to_redis_set(s, 'dqs')
     for s in upset_thread.other:
-        redis_set_mapping[f'other:{s.id}'] = upset_thread_item_to_redis_set(s)
+        redis_set_mapping[s.id] = upset_thread_item_to_redis_set(s, 'other')
     event_sets_redis_db.add_sets(slug, redis_set_mapping)
 
 
 def get_upset_thread_redis(slug):
     sets = event_sets_redis_db.get_sets(slug)
     winners, losers, notables, dqs, other = [], [], [], [], []
-    for set_key, redis_set in sets.items():
-        category, set_id = set_key.split(':')
+    for set_id, redis_set in sets.items():
         upset_thread_item = redis_set_to_upset_thread_item(int(set_id), redis_set)
+        category = upset_thread_item.category
         if category == 'winners':
             winners.append(upset_thread_item)
         elif category == 'losers':

@@ -1,4 +1,7 @@
 import json
+from logger import logging
+
+logger = logging.getLogger(__name__)
 
 
 class UpsetFactorTable:
@@ -46,7 +49,8 @@ class Set:
             losers_placement,
             winner_id,
             entrants,
-            games
+            games,
+            completed_at,
     ):
         self.id = identifier
         self.display_score = display_score
@@ -55,9 +59,10 @@ class Set:
         self.losers_placement = losers_placement
         self.total_games = total_games
         self.games = games
+        self.completed_at = completed_at
         self.winner, self.loser = self.init_slots(winner_id, entrants)
         self.upset_factor = self.init_upset_factor(self.winner, self.loser)
-        self.score = self.init_score(self.games, display_score, self.winner, self.loser, total_games)
+        self.score = self.init_score(self.games, display_score, self.winner, self.loser)
 
     @staticmethod
     def init_slots(winner_id, entrants):
@@ -74,15 +79,21 @@ class Set:
         )
 
     @staticmethod
-    def init_score(games, display_score, winner, loser, total_games):
+    def init_score(games, display_score, winner, loser):
+        logger.debug(f'Initializing score. games={games} display_score={display_score}')
         if games is None:
             score = display_score
             score = score.replace(winner.name, '').replace(loser.name, '').replace(' ', '')
             if score in ['0-2', '0-3', '1-2', '1-3', '2-3']:
                 score = score[::-1]
             return score
-        diff = total_games - len(games)
-        return f'3-{diff}'
+        winner_score, loser_score = 0, 0
+        for game in games:
+            if game.winner_id == winner.id:
+                winner_score += 1
+            else:
+                loser_score += 1
+        return f'{winner_score}-{loser_score}'
 
     def is_winners_bracket(self):
         return self.round > 0
@@ -116,6 +127,9 @@ class Set:
 
 class Entrant:
 
+    def __repr__(self):
+        return json.dumps(self, default=lambda o: o.__dict__, sort_keys=True, indent=4)
+
     def __init__(self, identifier, name, initial_seed):
         self.id = identifier
         self.name = name
@@ -124,13 +138,19 @@ class Entrant:
 
 class Game:
 
+    def __repr__(self):
+        return json.dumps(self, default=lambda o: o.__dict__, sort_keys=True, indent=4)
+
     def __init__(self, identifier, winner_id, selections):
         self.id = identifier
         self.winner_id = winner_id
-        self.selections = selections
+        self.selections = selections or []
 
 
 class Selection:
+
+    def __repr__(self):
+        return json.dumps(self, default=lambda o: o.__dict__, sort_keys=True, indent=4)
 
     def __init__(self, entrant, character):
         self.entrant = entrant
@@ -138,6 +158,9 @@ class Selection:
 
 
 class Character:
+
+    def __repr__(self):
+        return json.dumps(self, default=lambda o: o.__dict__, sort_keys=True, indent=4)
 
     def __init__(self, value, name):
         self.value = value
@@ -175,6 +198,8 @@ class UpsetThreadItem:
             self.losers_seed == item.losers_seed,
             self.losers_placement == item.losers_placement,
             self.upset_factor == item.upset_factor,
+            self.category == item.category,
+            self.completed_at == item.completed_at,
         ])
 
     def __init__(
@@ -190,6 +215,8 @@ class UpsetThreadItem:
             losers_seed,
             losers_placement,
             upset_factor,
+            completed_at,
+            category,
     ):
         self.id = identifier
         self.winners_name = winners_name
@@ -202,3 +229,5 @@ class UpsetThreadItem:
         self.losers_seed = losers_seed
         self.losers_placement = losers_placement
         self.upset_factor = upset_factor
+        self.completed_at = completed_at
+        self.category = category

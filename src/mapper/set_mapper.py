@@ -17,6 +17,7 @@ def to_domain_set(s):
         s['winnerId'],
         entrants,
         games,
+        s['completedAt'],
     )
 
 

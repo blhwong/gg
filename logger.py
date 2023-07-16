@@ -12,7 +12,7 @@ logging.basicConfig(
     format=LOG_FORMAT,
     datefmt=DATE_FORMAT,
     filename=LOG_FILENAME,
-    filemode='w',
+    filemode='a',
 )
 
 console_handler = logging.StreamHandler()

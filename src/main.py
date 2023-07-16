@@ -42,7 +42,7 @@ def process(slug, title, subreddit, file):
             try:
                 res = get_event(slug, page)
             except HTTPError as e:
-                logger.warn(e)
+                logger.warning(e)
                 continue
             if 'errors' in res:
                 logger.error(res['errors'])
