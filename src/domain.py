@@ -62,7 +62,7 @@ class Set:
         self.completed_at = completed_at
         self.winner, self.loser = self.init_slots(winner_id, entrants)
         self.upset_factor = self.init_upset_factor(self.winner, self.loser)
-        self.score = self.init_score(self.games, display_score, self.winner, self.loser)
+        self.score = self.init_score(self.games, display_score, self.winner, self.loser, total_games)
 
     @staticmethod
     def init_slots(winner_id, entrants):
@@ -79,21 +79,28 @@ class Set:
         )
 
     @staticmethod
-    def init_score(games, display_score, winner, loser):
-        logger.debug(f'Initializing score. games={games} display_score={display_score}')
+    def init_score(games, display_score, winner, loser, total_games):
+        logger.debug(f'Initializing score. games={games} display_score={display_score} total_games={total_games}')
         if games is None:
             score = display_score
             score = score.replace(winner.name, '').replace(loser.name, '').replace(' ', '')
             if score in ['0-2', '0-3', '1-2', '1-3', '2-3']:
                 score = score[::-1]
-            return score
-        winner_score, loser_score = 0, 0
-        for game in games:
-            if game.winner_id == winner.id:
-                winner_score += 1
-            else:
-                loser_score += 1
-        return f'{winner_score}-{loser_score}'
+        else:
+            winner_score, loser_score = 0, 0
+            for game in games:
+                if game.winner_id == winner.id:
+                    winner_score += 1
+                else:
+                    loser_score += 1
+            score = f'{winner_score}-{loser_score}'
+        if any([
+            total_games == 5 and score[0] != '3',
+            total_games == 3 and score[0] != '2',
+        ]):
+            logger.warning(f'Could not init score. score={score} display_score={display_score} total_games={total_games}')
+            return None
+        return score
 
     def is_winners_bracket(self):
         return self.round > 0
