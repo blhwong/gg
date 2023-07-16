@@ -81,6 +81,9 @@ class Set:
     @staticmethod
     def init_score(games, display_score, winner, loser, total_games):
         logger.debug(f'Initializing score. games={games} display_score={display_score} total_games={total_games}')
+        if display_score == 'DQ':
+            return 'DQ'
+
         if games is None:
             score = display_score
             score = score.replace(winner.name, '').replace(loser.name, '').replace(' ', '')

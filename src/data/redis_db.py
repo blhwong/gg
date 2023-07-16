@@ -1,5 +1,8 @@
 import redis
 import settings
+from logger import logging
+
+logger = logging.getLogger(__name__)
 
 r = redis.Redis(
     decode_responses=True,
@@ -58,6 +61,7 @@ class EventSetsRedisDb:
             self.add_set(slug, set_id, s)
 
     def add_set(self, slug, set_id, redis_set):
+        logger.debug(f"add_set. slug={slug} set_id={set_id} redis_set={redis_set}")
         r.hset(self.get_key(slug), set_id, redis_set)
 
     def get_sets(self, slug):

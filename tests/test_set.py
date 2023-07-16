@@ -80,6 +80,63 @@ def test_init_score_4():
     assert s.score == '3-1'
 
 
+def test_init_score_5():
+    s = Set(
+        60482457,
+        'DQ',
+        None,
+        5,
+        -6,
+        9,
+        12687800,
+        [e1, e2],
+        [
+            Game(16955184, 12687800, s1),
+            Game(16955185, 12687800, s1),
+            Game(16955186, 12394650, s2),
+            Game(16955187, 12687800, s1),
+        ],
+        None,
+    )
+    assert s.score == 'DQ'
+
+
+def test_init_score_6():
+    s = Set(
+        60482457,
+        'Zomba 1 - LG | Tweek 2',
+        None,
+        5,
+        -6,
+        9,
+        12687800,
+        [e1, e2],
+        None,
+        None,
+    )
+    assert s.score is None
+
+
+def test_init_score_7():
+    s = Set(
+        60482457,
+        'Zomba 0 - LG | Tweek 3',
+        None,
+        5,
+        -6,
+        9,
+        12687800,
+        [e1, e2],
+        [
+            Game(16955184, 12687800, s1),
+            Game(16955185, 12687800, s1),
+            Game(16955186, 12394650, s2),
+        ],
+        None,
+    )
+    assert s.score is None
+
+
 def test_get_winners_selection_1():
     s = Set(
         60482457,
