@@ -1,4 +1,4 @@
-from src.domain import UpsetThread
+from src.domain.upset_thread import UpsetThread
 
 
 def test_upset_thread_1():

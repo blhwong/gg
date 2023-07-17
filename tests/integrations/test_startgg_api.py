@@ -1,16 +1,18 @@
 import pytest
-from unittest.mock import ANY
-from src.integrations.startgg.api import get_event, get_characters, api_url
+from unittest.mock import ANY, Mock
 from src.integrations.startgg.query import events_query, characters_query
+from src.integrations.startgg.api import StartGGClient
+
+test_api_url = 'https://test.com'
 
 
 @pytest.fixture
-def mock_requests(mocker):
-    return mocker.patch('src.integrations.startgg.api.requests')
+def mock_startgg_client():
+    return StartGGClient(Mock(), test_api_url, 'test_api_key')
 
 
-def test_get_event_1(mock_requests):
-    get_event('slug', 5)
+def test_get_event_1(mock_startgg_client):
+    mock_startgg_client.get_event('slug', 5)
     expected_payload = {
         'query': events_query,
         'variables': {
@@ -22,15 +24,15 @@ def test_get_event_1(mock_requests):
             'sortType': 'RECENT'
         }
     }
-    mock_requests.post.assert_called_with(api_url, json=expected_payload, headers=ANY)
+    mock_startgg_client.request_client.post.assert_called_with(test_api_url, json=expected_payload, headers=ANY)
 
 
-def test_get_characters_1(mock_requests):
-    get_characters()
+def test_get_characters_1(mock_startgg_client):
+    mock_startgg_client.get_characters()
     expected_payload = {
         'query': characters_query,
         'variables': {
             'slug': 'game/ultimate',
         },
     }
-    mock_requests.post.assert_called_with(api_url, json=expected_payload, headers=ANY)
+    mock_startgg_client.request_client.post.assert_called_with(test_api_url, json=expected_payload, headers=ANY)

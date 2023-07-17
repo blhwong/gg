@@ -5,7 +5,7 @@ def from_redis_set(value):
     return json.loads(value)
 
 
-def upset_thread_item_to_redis_set(item, category):
+def upset_thread_item_to_redis_set(item):
     return json.dumps([
         item.winners_name,
         item.winners_characters,

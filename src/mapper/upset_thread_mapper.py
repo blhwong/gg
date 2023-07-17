@@ -1,5 +1,5 @@
 import json
-from src.domain import UpsetThreadItem
+from src.domain.upset_thread import UpsetThreadItem
 
 
 def redis_set_to_upset_thread_item(set_id, redis_set):

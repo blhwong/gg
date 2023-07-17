@@ -1,59 +1,47 @@
-import redis
-import settings
 from logger import logging
 
 logger = logging.getLogger(__name__)
 
-r = redis.Redis(
-    decode_responses=True,
-    host=settings.REDIS_HOST,
-    port=settings.REDIS_PORT,
-)
 
+class RedisService:
 
-class CharactersRedisDb:
-
-    prefix = "character"
+    hash_key_prefix = "event"
+    character_prefix = "character"
     is_character_loaded_key = "is_character_loaded"
 
+    def __init__(self, r):
+        self.r = r
+
     def is_characters_loaded(self):
-        return r.get(self.is_character_loaded_key) == "1"
+        return self.r.get(self.is_character_loaded_key) == "1"
 
     def set_is_characters_loaded(self, value):
-        return r.set(self.is_character_loaded_key, value)
+        return self.r.set(self.is_character_loaded_key, value)
 
     def add_characters(self, characters):
         for character in characters:
-            r.set(f"{self.prefix}:{character['id']}", character['name'])
+            self.r.set(f"{self.character_prefix}:{character['id']}", character['name'])
 
     def get_character_name(self, character_key):
-        return r.get(f"{self.prefix}:{character_key}")
-
-
-class EventsRedisDb:
-
-    hash_key_prefix = "event"
+        return self.r.get(f"{self.character_prefix}:{character_key}")
 
     def get_last_updated_date(self, slug):
-        return r.hget(f'{self.hash_key_prefix}:{slug}', "last_updated_date")
+        return self.r.hget(f'{self.hash_key_prefix}:{slug}', "last_updated_date")
 
     def set_last_updated_date(self, slug, value):
-        return r.hset(f'{self.hash_key_prefix}:{slug}', "last_updated_date", value)
+        return self.r.hset(f'{self.hash_key_prefix}:{slug}', "last_updated_date", value)
 
     def set_created_at(self, slug, value):
-        return r.hset(f'{self.hash_key_prefix}:{slug}', "created_at", value)
+        return self.r.hset(f'{self.hash_key_prefix}:{slug}', "created_at", value)
 
     def get_submission_id(self, slug):
-        return r.hget(f'{self.hash_key_prefix}:{slug}', "submission_id")
+        return self.r.hget(f'{self.hash_key_prefix}:{slug}', "submission_id")
 
     def set_submission_id(self, slug, value):
-        return r.hset(f'{self.hash_key_prefix}:{slug}', "submission_id", value)
-
-
-class EventSetsRedisDb:
+        return self.r.hset(f'{self.hash_key_prefix}:{slug}', "submission_id", value)
 
     @staticmethod
-    def get_key(slug):
+    def get_event_sets_key(slug):
         return f'event:{slug}_sets'
 
     def add_sets(self, slug, redis_set_mapping):
@@ -62,7 +50,7 @@ class EventSetsRedisDb:
 
     def add_set(self, slug, set_id, redis_set):
         logger.debug(f"add_set. slug={slug} set_id={set_id} redis_set={redis_set}")
-        r.hset(self.get_key(slug), set_id, redis_set)
+        self.r.hset(self.get_event_sets_key(slug), set_id, redis_set)
 
     def get_sets(self, slug):
-        return r.hgetall(self.get_key(slug))
+        return self.r.hgetall(self.get_event_sets_key(slug))

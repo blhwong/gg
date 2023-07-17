@@ -1,9 +1,13 @@
-import pytest
+import json
 from unittest.mock import Mock
-from src.domain import Set, Entrant, Selection, Character, UpsetThread
-from src.service import get_upset_thread, submit_to_subreddit, add_sets, get_upset_thread_redis, get_character_name
-from src.mapper.upset_thread_mapper import set_to_upset_thread_item
+
+import pytest
+
 from src.data.redis_mapper import upset_thread_item_to_redis_set
+from src.domain.set import Set, Entrant, Selection, Character, Game
+from src.domain.upset_thread import UpsetThread
+from src.mapper.upset_thread_mapper import set_to_upset_thread_item
+from src.service import Service
 
 e1 = Entrant(12394650, 'LG | Tweek', 3, 9, True)
 e2 = Entrant(12687800, 'Zomba', 20, 8, False)
@@ -78,22 +82,12 @@ others_set = Set(
 
 
 @pytest.fixture
-def mock_events_redis_db(mocker):
-    return mocker.patch('src.service.events_redis_db')
+def mock_service():
+    return Service(Mock(), Mock(), Mock())
 
 
-@pytest.fixture
-def mock_reddit(mocker):
-    return mocker.patch('src.service.reddit')
-
-
-@pytest.fixture
-def mock_event_sets_redis_db(mocker):
-    return mocker.patch('src.service.event_sets_redis_db')
-
-
-def test_get_upset_thread_1():
-    ut = get_upset_thread([winners_set, losers_set, notables_set, dqs_set, others_set])
+def test_get_upset_thread_1(mock_service):
+    ut = mock_service.get_upset_thread([winners_set, losers_set, notables_set, dqs_set, others_set])
 
     assert set_to_upset_thread_item(winners_set, 'winners') in ut.winners
     assert set_to_upset_thread_item(losers_set, 'losers') in ut.losers
@@ -102,47 +96,47 @@ def test_get_upset_thread_1():
     assert set_to_upset_thread_item(others_set, 'other') in ut.other
 
 
-def test_submit_to_subreddit_1(mock_events_redis_db, mock_reddit):
-    mock_events_redis_db.get_submission_id.return_value = '1234'
-    mock_reddit.submission.return_value = Mock()
-    submit_to_subreddit('slug', 'test', 'My title', 'my md')
+def test_submit_to_subreddit_1(mock_service):
+    mock_service.db_service.get_submission_id.return_value = '1234'
+    mock_service.reddit_client.submission.return_value = Mock()
+    mock_service.submit_to_subreddit('slug', 'test', 'My title', 'my md')
 
-    mock_reddit.submission.return_value.edit.assert_called_with('my md')
-    mock_events_redis_db.set_last_updated_date.assert_called_once()
-
-
-def test_submit_to_subreddit_2(mock_events_redis_db, mock_reddit):
-    mock_events_redis_db.get_submission_id.return_value = None
-    mock_reddit.subreddit.return_value = Mock()
-    submit_to_subreddit('slug', 'test', 'My title', 'my md')
-
-    mock_events_redis_db.set_last_updated_date.assert_called_once()
-    mock_reddit.subreddit.return_value.submit.assert_called_with(title='My title', selftext='my md')
-    mock_events_redis_db.set_submission_id.assert_called_once()
-    mock_events_redis_db.set_created_at.assert_called_once()
+    mock_service.reddit_client.submission.return_value.edit.assert_called_with('my md')
+    mock_service.db_service.set_last_updated_date.assert_called_once()
 
 
-def test_submit_to_subreddit_3(mock_events_redis_db):
-    mock_events_redis_db.get_submission_id.return_value = None
-    mock_events_redis_db.set_last_updated_date.return_value = None
+def test_submit_to_subreddit_2(mock_service):
+    mock_service.db_service.get_submission_id.return_value = None
+    mock_service.reddit_client.subreddit.return_value = Mock()
+    mock_service.submit_to_subreddit('slug', 'test', 'My title', 'my md')
+
+    mock_service.db_service.set_last_updated_date.assert_called_once()
+    mock_service.reddit_client.subreddit.return_value.submit.assert_called_with(title='My title', selftext='my md')
+    mock_service.db_service.set_submission_id.assert_called_once()
+    mock_service.db_service.set_created_at.assert_called_once()
+
+
+def test_submit_to_subreddit_3(mock_service):
+    mock_service.db_service.get_submission_id.return_value = None
+    mock_service.db_service.set_last_updated_date.return_value = None
     with pytest.raises(Exception) as exception_info:
-        submit_to_subreddit('slug', 'test', None, 'my md')
+        mock_service.submit_to_subreddit('slug', 'test', None, 'my md')
 
     assert str(exception_info.value) == 'Title is required.'
 
 
-def test_add_sets_1(mock_event_sets_redis_db):
+def test_add_sets_1(mock_service):
     winner = set_to_upset_thread_item(winners_set, 'winners')
     loser = set_to_upset_thread_item(losers_set, 'losers')
     notable = set_to_upset_thread_item(notables_set, 'notables')
     dq = set_to_upset_thread_item(dqs_set, 'dqs')
     other = set_to_upset_thread_item(others_set, 'other')
     expected_redis_sets = {
-        winners_set.id: upset_thread_item_to_redis_set(winner, 'winners'),
-        losers_set.id: upset_thread_item_to_redis_set(loser, 'losers'),
-        notables_set.id: upset_thread_item_to_redis_set(notable, 'notables'),
-        dqs_set.id: upset_thread_item_to_redis_set(dq, 'dqs'),
-        others_set.id: upset_thread_item_to_redis_set(other, 'other'),
+        winners_set.id: upset_thread_item_to_redis_set(winner),
+        losers_set.id: upset_thread_item_to_redis_set(loser),
+        notables_set.id: upset_thread_item_to_redis_set(notable),
+        dqs_set.id: upset_thread_item_to_redis_set(dq),
+        others_set.id: upset_thread_item_to_redis_set(other),
     }
     upset_thread = UpsetThread(
         [winner],
@@ -151,25 +145,25 @@ def test_add_sets_1(mock_event_sets_redis_db):
         [dq],
         [other],
     )
-    add_sets('test_slug', upset_thread)
-    mock_event_sets_redis_db.add_sets.assert_called_with('test_slug', expected_redis_sets)
+    mock_service.add_sets('test_slug', upset_thread)
+    mock_service.db_service.add_sets.assert_called_with('test_slug', expected_redis_sets)
 
 
-def test_get_upset_thread_redis_1(mock_event_sets_redis_db):
+def test_get_upset_thread_redis_1(mock_service):
     winner = set_to_upset_thread_item(winners_set, 'winners')
     loser = set_to_upset_thread_item(losers_set, 'losers')
     notable = set_to_upset_thread_item(notables_set, 'notables')
     dq = set_to_upset_thread_item(dqs_set, 'dqs')
     other = set_to_upset_thread_item(others_set, 'other')
     redis_sets = {
-        winners_set.id: upset_thread_item_to_redis_set(winner, 'winners'),
-        losers_set.id: upset_thread_item_to_redis_set(loser, 'losers'),
-        notables_set.id: upset_thread_item_to_redis_set(notable, 'notables'),
-        dqs_set.id: upset_thread_item_to_redis_set(dq, 'dqs'),
-        others_set.id: upset_thread_item_to_redis_set(other, 'other'),
+        winners_set.id: upset_thread_item_to_redis_set(winner),
+        losers_set.id: upset_thread_item_to_redis_set(loser),
+        notables_set.id: upset_thread_item_to_redis_set(notable),
+        dqs_set.id: upset_thread_item_to_redis_set(dq),
+        others_set.id: upset_thread_item_to_redis_set(other),
     }
-    mock_event_sets_redis_db.get_sets.return_value = redis_sets
-    upset_thread = get_upset_thread_redis("tournament/battle-of-bc-5-5/event/ultimate-singles")
+    mock_service.db_service.get_sets.return_value = redis_sets
+    upset_thread = mock_service.get_upset_thread_db("tournament/battle-of-bc-5-5/event/ultimate-singles")
     assert winner in upset_thread.winners
     assert loser in upset_thread.losers
     assert notable in upset_thread.notables
@@ -177,16 +171,193 @@ def test_get_upset_thread_redis_1(mock_event_sets_redis_db):
     assert other in upset_thread.other
 
 
-def test_get_character_name_1(mocker):
-    mocker.patch('src.service.get_characters', return_value={'data': {'videogame': {'characters': []}}})
-    mock_characters_redis_db = mocker.patch('src.service.characters_redis_db')
-    mock_characters_redis_db.is_characters_loaded.return_value = False
-    mock_characters_redis_db.get_character_name.return_value = 'Cloud'
+def test_get_character_name_1(mock_service):
+    mock_service.startgg_client.get_characters.return_value = {'data': {'videogame': {'characters': []}}}
+    mock_service.db_service.is_characters_loaded.return_value = False
+    mock_service.db_service.get_character_name.return_value = 'Cloud'
 
-    name = get_character_name(1234)
+    name = mock_service.get_character_name(1234)
 
     assert name == 'Cloud'
 
-    mock_characters_redis_db.set_is_characters_loaded.assert_called_once()
-    mock_characters_redis_db.add_characters.assert_called_with([])
-    mock_characters_redis_db.get_character_name.assert_called_with(1234)
+    mock_service.db_service.set_is_characters_loaded.assert_called_once()
+    mock_service.db_service.add_characters.assert_called_with([])
+    mock_service.db_service.get_character_name.assert_called_with(1234)
+
+
+def test_to_domain_set(mock_service):
+    characters = {
+        1337: 'Wolf',
+        1316: 'Palutena',
+        1341: 'Zero Suit Samus',
+    }
+    mock_service.db_service.get_character_name.side_effect = lambda x: characters[x]
+    s = mock_service.to_domain_set({
+        "id": 62697291,
+        "completedAt": 1689457041,
+        "games": [
+            {
+                "id": 17627547,
+                "winnerId": 13501615,
+                "selections": [
+                    {
+                        "selectionType": "CHARACTER",
+                        "selectionValue": 1337,
+                        "entrant": {
+                            "id": 13501615,
+                            "name": "DOOB | idlehands",
+                            "initialSeedNum": 93,
+                            "standing": {
+                                "isFinal": True,
+                                "placement": 65
+                            }
+                        }
+                    },
+                    {
+                        "selectionType": "CHARACTER",
+                        "selectionValue": 1316,
+                        "entrant": {
+                            "id": 13634542,
+                            "name": "Smoge | Be Kind",
+                            "initialSeedNum": 164,
+                            "standing": {
+                                "isFinal": True,
+                                "placement": 129
+                            }
+                        }
+                    }
+                ]
+            },
+            {
+                "id": 17627548,
+                "winnerId": 13501615,
+                "selections": [
+                    {
+                        "selectionType": "CHARACTER",
+                        "selectionValue": 1337,
+                        "entrant": {
+                            "id": 13501615,
+                            "name": "DOOB | idlehands",
+                            "initialSeedNum": 93,
+                            "standing": {
+                                "isFinal": True,
+                                "placement": 65
+                            }
+                        }
+                    },
+                    {
+                        "selectionType": "CHARACTER",
+                        "selectionValue": 1341,
+                        "entrant": {
+                            "id": 13634542,
+                            "name": "Smoge | Be Kind",
+                            "initialSeedNum": 164,
+                            "standing": {
+                                "isFinal": True,
+                                "placement": 129
+                            }
+                        }
+                    }
+                ]
+            },
+            {
+                "id": 17627549,
+                "winnerId": 13501615,
+                "selections": [
+                    {
+                        "selectionType": "CHARACTER",
+                        "selectionValue": 1337,
+                        "entrant": {
+                            "id": 13501615,
+                            "name": "DOOB | idlehands",
+                            "initialSeedNum": 93,
+                            "standing": {
+                                "isFinal": True,
+                                "placement": 65
+                            }
+                        }
+                    },
+                    {
+                        "selectionType": "CHARACTER",
+                        "selectionValue": 1341,
+                        "entrant": {
+                            "id": 13634542,
+                            "name": "Smoge | Be Kind",
+                            "initialSeedNum": 164,
+                            "standing": {
+                                "isFinal": True,
+                                "placement": 129
+                            }
+                        }
+                    }
+                ]
+            }
+        ],
+        "identifier": "G",
+        "displayScore": "DOOB | idlehands 3 - Smoge | Be Kind 0",
+        "fullRoundText": "Winners Round 1",
+        "totalGames": 5,
+        "lPlacement": 13,
+        "wPlacement": 9,
+        "winnerId": 13501615,
+        "state": 3,
+        "setGamesType": 1,
+        "round": 1,
+        "phaseGroup": {
+            "displayIdentifier": "B2"
+        },
+        "slots": [
+            {
+                "entrant": {
+                    "id": 13501615,
+                    "name": "DOOB | idlehands",
+                    "initialSeedNum": 93,
+                    "standing": {
+                        "isFinal": True,
+                        "placement": 65
+                    }
+                }
+            },
+            {
+                "entrant": {
+                    "id": 13634542,
+                    "name": "Smoge | Be Kind",
+                    "initialSeedNum": 164,
+                    "standing": {
+                        "isFinal": True,
+                        "placement": 129
+                    }
+                }
+            }
+        ]
+    })
+    entrants = [
+        Entrant(13501615, "DOOB | idlehands", 93, 65, True),
+        Entrant(13634542, "Smoge | Be Kind", 164, 129, True)
+    ]
+
+    selection1 = Selection(entrants[0], Character(1337, 'Wolf'))
+    selection2 = Selection(entrants[1], Character(1341, 'Zero Suit Samus'))
+    selection3 = Selection(entrants[1], Character(1316, 'Palutena'))
+    games = [
+        Game(17627547, 13501615, [selection1, selection3]),
+        Game(17627548, 13501615, [selection1, selection2]),
+        Game(17627549, 13501615, [selection1, selection2]),
+    ]
+    assert s == Set(
+        62697291,
+        "DOOB | idlehands 3 - Smoge | Be Kind 0",
+        "Winners Round 1",
+        5,
+        1,
+        129,
+        13501615,
+        entrants,
+        games,
+        1689457041,
+    )
+
+
+def test_get_event_1(mock_service):
+    mock_service.get_event('slug', 10)
+    mock_service.startgg_client.get_event.assert_called_with('slug', 10)

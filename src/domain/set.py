@@ -61,8 +61,24 @@ class Set:
         self.games = games
         self.completed_at = completed_at
         self.winner, self.loser = self.init_slots(winner_id, entrants)
-        self.upset_factor = self.init_upset_factor(self.winner, self.loser)
+        self.upset_factor = self.init_upset_factor(self.winner.initial_seed, self.loser.initial_seed)
         self.score = self.init_score(self.games, display_score, self.winner, self.loser, total_games)
+
+    def __eq__(self, s):
+        return all([
+            self.id == s.id,
+            self.display_score == s.display_score,
+            self.full_round_text == s.full_round_text,
+            self.round == s.round,
+            self.losers_placement == s.losers_placement,
+            self.total_games == s.total_games,
+            self.games == s.games,
+            self.completed_at == s.completed_at,
+            self.winner == s.winner,
+            self.loser == s.loser,
+            self.upset_factor == s.upset_factor,
+            self.score == s.score,
+        ])
 
     @staticmethod
     def init_slots(winner_id, entrants):
@@ -70,13 +86,6 @@ class Set:
         if winner_id == loser.id:
             winner, loser = loser, winner
         return winner, loser
-
-    @staticmethod
-    def init_upset_factor(winner, loser):
-        return upset_factor_table.get_upset_factor(
-            winner.initial_seed,
-            loser.initial_seed,
-        )
 
     @staticmethod
     def init_score(games, display_score, winner, loser, total_games):
@@ -101,9 +110,15 @@ class Set:
             total_games == 5 and score[0] != '3',
             total_games == 3 and score[0] != '2',
         ]):
-            logger.warning(f'Could not init score. score={score} display_score={display_score} total_games={total_games}')
+            logger.warning(
+                f'Could not init score. score={score} display_score={display_score} total_games={total_games}',
+            )
             return None
         return score
+
+    @staticmethod
+    def init_upset_factor(winner_seed, loser_seed):
+        return upset_factor_table.get_upset_factor(winner_seed, loser_seed)
 
     def is_winners_bracket(self):
         return self.round > 0
@@ -147,6 +162,15 @@ class Entrant:
         self.placement = placement
         self.is_final = is_final
 
+    def __eq__(self, entrant):
+        return all([
+            self.id == entrant.id,
+            self.name == entrant.name,
+            self.initial_seed == entrant.initial_seed,
+            self.placement == entrant.placement,
+            self.is_final == entrant.is_final,
+        ])
+
 
 class Game:
 
@@ -158,6 +182,13 @@ class Game:
         self.winner_id = winner_id
         self.selections = selections or []
 
+    def __eq__(self, game):
+        return all([
+            self.id == game.id,
+            self.winner_id == game.winner_id,
+            self.selections == game.selections,
+        ])
+
 
 class Selection:
 
@@ -167,6 +198,12 @@ class Selection:
     def __init__(self, entrant, character):
         self.entrant = entrant
         self.character = character
+
+    def __eq__(self, selection):
+        return all([
+            self.entrant == selection.entrant,
+            self.character == selection.character,
+        ])
 
 
 class Character:
@@ -178,68 +215,8 @@ class Character:
         self.value = value
         self.name = name
 
-
-class UpsetThread:
-
-    def __repr__(self):
-        return json.dumps(self, default=lambda o: o.__dict__, sort_keys=True, indent=4)
-
-    def __init__(self, winners, losers, notables, dqs, other):
-        self.winners = winners
-        self.losers = losers
-        self.notables = notables
-        self.dqs = dqs
-        self.other = other
-
-
-class UpsetThreadItem:
-
-    def __repr__(self):
-        return json.dumps(self, default=lambda o: o.__dict__, sort_keys=True, indent=4)
-
-    def __eq__(self, item):
+    def __eq__(self, character):
         return all([
-            self.id == item.id,
-            self.winners_name == item.winners_name,
-            self.winners_characters == item.winners_characters,
-            self.winners_seed == item.winners_seed,
-            self.score == item.score,
-            self.losers_name == item.losers_name,
-            self.losers_characters == item.losers_characters,
-            self.is_winners_bracket == item.is_winners_bracket,
-            self.losers_seed == item.losers_seed,
-            self.losers_placement == item.losers_placement,
-            self.upset_factor == item.upset_factor,
-            self.category == item.category,
-            self.completed_at == item.completed_at,
+            self.value == character.value,
+            self.name == character.name,
         ])
-
-    def __init__(
-            self,
-            identifier,
-            winners_name,
-            winners_characters,
-            winners_seed,
-            score,
-            losers_name,
-            losers_characters,
-            is_winners_bracket,
-            losers_seed,
-            losers_placement,
-            upset_factor,
-            completed_at,
-            category,
-    ):
-        self.id = identifier
-        self.winners_name = winners_name
-        self.winners_characters = winners_characters
-        self.winners_seed = winners_seed
-        self.score = score
-        self.losers_name = losers_name
-        self.losers_characters = losers_characters
-        self.is_winners_bracket = is_winners_bracket
-        self.losers_seed = losers_seed
-        self.losers_placement = losers_placement
-        self.upset_factor = upset_factor
-        self.completed_at = completed_at
-        self.category = category

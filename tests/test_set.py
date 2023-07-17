@@ -1,4 +1,4 @@
-from src.domain import Set, Entrant, Game, Selection, Character
+from src.domain.set import Set, Entrant, Game, Selection, Character
 
 
 e1 = Entrant(12394650, 'LG | Tweek', 3, 9, True)

@@ -1,12 +1,16 @@
 import json
 import argparse
+import redis
+import requests
+import settings
 from logger import logging
-from src.integrations.startgg.api import get_event
 from src.mapper.markdown_mapper import to_markdown
-from src.mapper.set_mapper import to_domain_set
 from time import sleep
 from requests.exceptions import HTTPError
-from src.service import get_upset_thread, submit_to_subreddit, add_sets, get_upset_thread_redis
+from src.data.redis_db import RedisService
+from src.service import Service
+from src.integrations.reddit.api import reddit
+from src.integrations.startgg.api import StartGGClient
 
 logger = logging.getLogger(__name__)
 
@@ -19,11 +23,10 @@ parser.add_argument('-fm', '--frequency_minutes', type=int)
 
 args = parser.parse_args()
 
-# slug = 'tournament/battle-of-bc-5-5/event/ultimate-singles'
-# title = 'Battle of BC 5 Ultimate Singles Upset Thread'
-# slug = 'tournament/high-rez/event/smash-ultimate-singles-day-two'
-# title = 'High Rez Ultimate Singles Day 2 Upset Thread'
-# subreddit = f'u_{settings.REDDIT_USERNAME}'
+r = redis.Redis(host=settings.REDIS_HOST, port=settings.REDIS_PORT, decode_responses=True)
+redis_service = RedisService(r)
+startgg_client = StartGGClient(requests, settings.START_GG_API_URL, settings.START_GG_API_KEY)
+service = Service(redis_service, reddit, startgg_client)
 
 
 def process(slug, title, subreddit, file):
@@ -32,7 +35,7 @@ def process(slug, title, subreddit, file):
     if file:
         logger.info('Using file data')
         with open('src/data/startgg_data.json', 'r') as data:
-            sets += [to_domain_set(s) for s in json.load(data)]
+            sets += [service.to_domain_set(s) for s in json.load(data)]
         data.close()
     else:
         logger.info('Fetching data from startgg')
@@ -40,7 +43,7 @@ def process(slug, title, subreddit, file):
             logger.debug(f'Fetching page {page}')
             sleep(0.75)
             try:
-                res = get_event(slug, page)
+                res = service.get_event(slug, page)
             except HTTPError as e:
                 logger.warning(e)
                 continue
@@ -51,12 +54,12 @@ def process(slug, title, subreddit, file):
             if page > total_pages:
                 break
             page += 1
-            sets += [to_domain_set(s) for s in res['data']['event']['sets']['nodes']]
+            sets += [service.to_domain_set(s) for s in res['data']['event']['sets']['nodes']]
 
     sets.sort(key=lambda s: -s.upset_factor)
-    upset_thread = get_upset_thread(sets)
-    add_sets(slug, upset_thread)
-    saved_upset_thread = get_upset_thread_redis(slug)
+    upset_thread = service.get_upset_thread(sets)
+    service.add_sets(slug, upset_thread)
+    saved_upset_thread = service.get_upset_thread_db(slug)
     md = to_markdown(saved_upset_thread, slug)
 
     with open(f'output/{title}.md', 'w+') as file:
@@ -65,7 +68,7 @@ def process(slug, title, subreddit, file):
 
     if subreddit:
         logger.info(f'Posting to subreddit {subreddit}')
-        submit_to_subreddit(slug, subreddit, title, md)
+        service.submit_to_subreddit(slug, subreddit, title, md)
     else:
         logger.info('Skipping post to subreddit')
 
