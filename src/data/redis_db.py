@@ -4,7 +4,6 @@ logger = logging.getLogger(__name__)
 
 
 class RedisService:
-
     hash_key_prefix = "event"
     character_prefix = "character"
     is_character_loaded_key = "is_character_loaded"

@@ -1,16 +1,18 @@
-import json
 import argparse
+import json
+from time import sleep
+
 import redis
 import requests
+from requests.exceptions import HTTPError
+
 import settings
 from logger import logging
-from src.mapper.markdown_mapper import to_markdown
-from time import sleep
-from requests.exceptions import HTTPError
 from src.data.redis_db import RedisService
-from src.service import Service
 from src.integrations.reddit.api import reddit
 from src.integrations.startgg.api import StartGGClient
+from src.mapper.markdown_mapper import to_markdown
+from src.service import Service
 
 logger = logging.getLogger(__name__)
 

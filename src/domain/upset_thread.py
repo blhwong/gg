@@ -34,7 +34,7 @@ class UpsetThreadItem:
             self.upset_factor == item.upset_factor,
             self.category == item.category,
             self.completed_at == item.completed_at,
-            ])
+        ])
 
     def __init__(
             self,

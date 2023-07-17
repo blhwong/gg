@@ -1,10 +1,10 @@
 from time import time
+
+from logger import logging
+from src.data.redis_mapper import upset_thread_item_to_redis_set
 from src.domain.set import Set, Entrant, Game, Selection, Character
 from src.domain.upset_thread import UpsetThread
-from src.data.redis_mapper import upset_thread_item_to_redis_set
 from src.mapper.upset_thread_mapper import set_to_upset_thread_item, redis_set_to_upset_thread_item
-from logger import logging
-
 
 logger = logging.getLogger(__name__)
 

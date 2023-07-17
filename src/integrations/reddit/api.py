@@ -1,6 +1,6 @@
-import settings
 import praw
 
+import settings
 
 reddit = praw.Reddit(
     client_id=settings.REDDIT_CLIENT_ID,

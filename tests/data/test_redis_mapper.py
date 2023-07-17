@@ -1,7 +1,6 @@
 from src.data.redis_mapper import upset_thread_item_to_redis_set, from_redis_set
 from src.domain.upset_thread import UpsetThreadItem
 
-
 s = UpsetThreadItem(
     60482457,
     'Zomba',

@@ -1,11 +1,10 @@
 # import logging
 import logging.handlers
 
-
 LOG_FORMAT = 'datetime=%(asctime)s - name=%(name)s - level=%(levelname)s - msg=%(message)s'
 DATE_FORMAT = '%Y-%m-%dT%H:%M:%S%Z'
 LOG_FILENAME = 'logs/gg_logs.log'
-LOG_FILE_SIZE = 10*1024*1024
+LOG_FILE_SIZE = 10 * 1024 * 1024
 
 logging.basicConfig(
     level=logging.DEBUG,

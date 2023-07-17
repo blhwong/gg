@@ -1,4 +1,5 @@
 import json
+
 from src.domain.upset_thread import UpsetThreadItem
 
 

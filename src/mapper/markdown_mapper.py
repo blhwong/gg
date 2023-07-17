@@ -1,9 +1,9 @@
-import inflect
 from datetime import datetime
+
+import inflect
 from pytz import timezone, utc
 
 p = inflect.engine()
-
 
 DATETIME_FORMAT = '%m/%d/%y %I:%M %p %Z'
 
