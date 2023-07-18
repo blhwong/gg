@@ -8,9 +8,9 @@ from requests.exceptions import HTTPError
 
 import settings
 from logger import logging
+from src.client.reddit.api import reddit
+from src.client.startgg.api import StartGGClient
 from src.data.redis_db import RedisService
-from src.integrations.reddit.api import reddit
-from src.integrations.startgg.api import StartGGClient
 from src.mapper.markdown_mapper import to_markdown
 from src.service import Service
 
@@ -31,7 +31,7 @@ startgg_client = StartGGClient(requests, settings.START_GG_API_URL, settings.STA
 service = Service(redis_service, reddit, startgg_client)
 
 
-def process(slug, title, subreddit, file):
+def process(slug: str, title: str, subreddit: str, file: str):
     sets = []
     page = 1
     if file:

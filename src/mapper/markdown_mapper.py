@@ -3,12 +3,14 @@ from datetime import datetime
 import inflect
 from pytz import timezone, utc
 
+from src.domain.upset_thread import UpsetThread, UpsetThreadItem
+
 p = inflect.engine()
 
 DATETIME_FORMAT = '%m/%d/%y %I:%M %p %Z'
 
 
-def to_line_item(item):
+def to_line_item(item: UpsetThreadItem) -> str:
     words = [item.winners_name]
     if item.winners_characters:
         words.append(f'({item.winners_characters})')
@@ -31,11 +33,11 @@ def to_line_item(item):
     return text
 
 
-def to_dq_line_item(item):
+def to_dq_line_item(item: UpsetThreadItem) -> str:
     return item.losers_name
 
 
-def to_markdown(upset_thread, slug):
+def to_markdown(upset_thread: UpsetThread, slug: str) -> str:
     winners = '  \n'.join([to_line_item(s) for s in upset_thread.winners])
     losers = '  \n'.join([to_line_item(s) for s in upset_thread.losers])
     notables = '  \n'.join([to_line_item(s) for s in upset_thread.notables])

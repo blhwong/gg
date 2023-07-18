@@ -1,6 +1,10 @@
 from time import time
 
+from praw import Reddit
+
 from logger import logging
+from src.client.startgg.api import StartGGClient
+from src.data.redis_db import RedisService
 from src.data.redis_mapper import upset_thread_item_to_redis_set
 from src.domain.set import Set, Entrant, Game, Selection, Character
 from src.domain.upset_thread import UpsetThread
@@ -11,21 +15,21 @@ logger = logging.getLogger(__name__)
 
 class Service:
 
-    def __init__(self, db_service, reddit_client, startgg_client):
+    def __init__(self, db_service: RedisService, reddit_client: Reddit, startgg_client: StartGGClient) -> None:
         self.db_service = db_service
         self.reddit_client = reddit_client
         self.startgg_client = startgg_client
 
     @staticmethod
     def apply_filter(
-            upset_factor,
-            winner_initial_seed,
-            loser_initial_seed,
-            is_dq,
-            min_upset_factor=-float('inf'),
-            max_seed=float('inf'),
-            include_dq=False,
-    ):
+            upset_factor: int,
+            winner_initial_seed: int,
+            loser_initial_seed: int,
+            is_dq: bool,
+            min_upset_factor: int = -float('inf'),
+            max_seed: int = float('inf'),
+            include_dq: bool = False,
+    ) -> bool:
         fulfills_min_upset_factor = upset_factor >= min_upset_factor
         fulfills_not_dq = not is_dq or include_dq
         fulfills_max_seed = any([winner_initial_seed <= max_seed, loser_initial_seed <= max_seed])
@@ -35,7 +39,7 @@ class Service:
             fulfills_max_seed,
         ])
 
-    def get_upset_thread(self, sets):
+    def get_upset_thread(self, sets: list[Set]) -> UpsetThread:
         winners, losers, notables, dqs, other = [], [], [], [], []
 
         for s in sets:
@@ -85,17 +89,17 @@ class Service:
             [set_to_upset_thread_item(s, 'other') for s in other],
         )
 
-    def get_character_name(self, character_key):
+    def get_character_name(self, character_key: int) -> str:
         if not self.db_service.is_characters_loaded():
             res = self.startgg_client.get_characters()
             self.db_service.add_characters(res['data']['videogame']['characters'])
             self.db_service.set_is_characters_loaded(1)
         return self.db_service.get_character_name(character_key)
 
-    def get_event(self, slug, page):
+    def get_event(self, slug: str, page: int) -> object:
         return self.startgg_client.get_event(slug, page)
 
-    def submit_to_subreddit(self, slug, subreddit_name, title, md):
+    def submit_to_subreddit(self, slug: str, subreddit_name: str, title: str, md: str) -> None:
         submission_id = self.db_service.get_submission_id(slug)
         self.db_service.set_last_updated_date(slug, int(time()))
         if submission_id:
@@ -111,7 +115,7 @@ class Service:
         self.db_service.set_submission_id(slug, submission.id)
         self.db_service.set_created_at(slug, int(time()))
 
-    def add_sets(self, slug, upset_thread):
+    def add_sets(self, slug: str, upset_thread: UpsetThread) -> None:
         redis_set_mapping = {}
         for s in upset_thread.winners:
             redis_set_mapping[s.id] = upset_thread_item_to_redis_set(s)
@@ -125,7 +129,7 @@ class Service:
             redis_set_mapping[s.id] = upset_thread_item_to_redis_set(s)
         self.db_service.add_sets(slug, redis_set_mapping)
 
-    def get_upset_thread_db(self, slug):
+    def get_upset_thread_db(self, slug: str) -> UpsetThread:
         sets = self.db_service.get_sets(slug)
         winners, losers, notables, dqs, other = [], [], [], [], []
         for set_id, redis_set in sets.items():
@@ -150,7 +154,7 @@ class Service:
             other,
         )
 
-    def to_domain_set(self, s):
+    def to_domain_set(self, s: dict) -> Set:
         entrants = [self.to_domain_entrant(slot['entrant']) for slot in s['slots']]
         winner_id = s['winnerId']
         l_placement = [entrant.placement for entrant in entrants if entrant.id != winner_id][0]
@@ -171,7 +175,7 @@ class Service:
         )
 
     @staticmethod
-    def to_domain_entrant(entrant):
+    def to_domain_entrant(entrant: dict) -> Entrant:
         return Entrant(
             entrant['id'],
             entrant['name'],
@@ -180,7 +184,7 @@ class Service:
             entrant['standing']['isFinal'],
         )
 
-    def to_domain_game(self, game):
+    def to_domain_game(self, game: dict) -> Game:
         selections = None
         if game['selections']:
             selections = [self.to_domain_selection(selection) for selection in game['selections']]
@@ -190,12 +194,12 @@ class Service:
             selections,
         )
 
-    def to_domain_character(self, selection_type, value):
+    def to_domain_character(self, selection_type: str, value: int) -> Character | None:
         if selection_type != "CHARACTER":
             return None
         return Character(value, self.get_character_name(value))
 
-    def to_domain_selection(self, selection):
+    def to_domain_selection(self, selection: dict) -> Selection:
         return Selection(
             self.to_domain_entrant(selection['entrant']),
             self.to_domain_character(selection['selectionType'], selection['selectionValue']),

@@ -1,11 +1,13 @@
 import json
 
+from src.domain.upset_thread import UpsetThreadItem
 
-def from_redis_set(value):
+
+def from_redis_set(value: str) -> dict[str, str]:
     return json.loads(value)
 
 
-def upset_thread_item_to_redis_set(item):
+def upset_thread_item_to_redis_set(item: UpsetThreadItem) -> str:
     return json.dumps([
         item.winners_name,
         item.winners_characters,

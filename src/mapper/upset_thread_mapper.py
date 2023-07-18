@@ -1,13 +1,14 @@
 import json
 
+from src.domain.set import Set
 from src.domain.upset_thread import UpsetThreadItem
 
 
-def redis_set_to_upset_thread_item(set_id, redis_set):
+def redis_set_to_upset_thread_item(set_id: int, redis_set: str) -> UpsetThreadItem:
     return UpsetThreadItem(set_id, *json.loads(redis_set))
 
 
-def set_to_upset_thread_item(s, category):
+def set_to_upset_thread_item(s: Set, category: str) -> UpsetThreadItem:
     return UpsetThreadItem(
         s.id,
         s.winner.name,

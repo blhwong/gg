@@ -2,8 +2,8 @@ from unittest.mock import ANY, Mock
 
 import pytest
 
-from src.integrations.startgg.api import StartGGClient
-from src.integrations.startgg.query import events_query, characters_query
+from src.client.startgg.api import StartGGClient
+from src.client.startgg.query import events_query, characters_query
 
 test_api_url = 'https://test.com'
 
