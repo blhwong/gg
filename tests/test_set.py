@@ -1,3 +1,5 @@
+from time import time
+
 from src.domain.set import Set, Entrant, Game, Selection, Character
 
 e1 = Entrant(12394650, 'LG | Tweek', 3, 9, True)
@@ -17,7 +19,7 @@ def test_init_score_1():
         12687800,
         [e1, e2],
         None,
-        None,
+        int(time()),
     )
     assert s.score == '3-0'
 
@@ -33,7 +35,7 @@ def test_init_score_2():
         12687800,
         [e1, e2],
         None,
-        None,
+        int(time()),
     )
     assert s.score == '3-0'
 
@@ -53,7 +55,7 @@ def test_init_score_3():
             Game(16955185, 12687800, s1),
             Game(16955186, 12687800, s2),
         ],
-        None,
+        int(time()),
     )
     assert s.score == '3-0'
 
@@ -74,7 +76,7 @@ def test_init_score_4():
             Game(16955186, 12394650, s2),
             Game(16955187, 12687800, s1),
         ],
-        None,
+        int(time()),
     )
     assert s.score == '3-1'
 
@@ -95,7 +97,7 @@ def test_init_score_5():
             Game(16955186, 12394650, s2),
             Game(16955187, 12687800, s1),
         ],
-        None,
+        int(time()),
     )
     assert s.score == 'DQ'
 
@@ -111,7 +113,7 @@ def test_init_score_6():
         12687800,
         [e1, e2],
         None,
-        None,
+        int(time()),
     )
     assert s.score is None
 
@@ -131,7 +133,7 @@ def test_init_score_7():
             Game(16955185, 12687800, s1),
             Game(16955186, 12394650, s2),
         ],
-        None,
+        int(time()),
     )
     assert s.score is None
 
@@ -151,7 +153,7 @@ def test_get_winners_selection_1():
             Game(16955185, 12687800, s1),
             Game(16955186, 12687800, s2),
         ],
-        None,
+        int(time()),
     )
     assert s.get_winner_character_selections() == 'R.O.B.'
 
@@ -171,7 +173,7 @@ def test_get_winners_selection_2():
             Game(16955185, 12687800, s1),
             Game(16955186, 12687800, s2),
         ],
-        None,
+        int(time()),
     )
     assert s.get_loser_character_selections() == 'Diddy Kong, Sephiroth'
 
@@ -187,7 +189,7 @@ def test_get_characters_selections():
         12687800,
         [e1, e2],
         None,
-        None,
+        int(time()),
     )
 
     assert s.get_character_selections(12687800) == ''
@@ -204,7 +206,7 @@ def test_is_dq_and_out_1():
         12687800,
         [e1, e2],
         None,
-        None,
+        int(time()),
     )
     assert not s.is_dq_and_out()
 
@@ -220,7 +222,7 @@ def test_is_dq_and_out_2():
         12687800,
         [e1, e2],
         None,
-        None,
+        int(time()),
     )
     assert s.is_dq_and_out()
 
@@ -236,6 +238,6 @@ def test_is_notable_1():
         12687800,
         [e1, e2],
         None,
-        None,
+        int(time()),
     )
     assert s.is_notable()

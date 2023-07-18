@@ -125,13 +125,13 @@ class Set:
             self,
             identifier: int,
             display_score: str,
-            full_round_text: str,
+            full_round_text: str | None,
             total_games: int,
             round_num: int,
             losers_placement: int,
             winner_id: int,
             entrants: list[Entrant],
-            games: list[Game],
+            games: list[Game] | None,
             completed_at: int,
     ) -> None:
         self.id = identifier

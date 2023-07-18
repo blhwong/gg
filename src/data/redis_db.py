@@ -1,4 +1,4 @@
-from redis import Redis
+from typing import Any
 
 from logger import logging
 
@@ -10,7 +10,7 @@ class RedisService:
     character_prefix: str = "character"
     is_character_loaded_key: str = "is_character_loaded"
 
-    def __init__(self, r: Redis) -> None:
+    def __init__(self, r: Any) -> None:
         self.r = r
 
     def is_characters_loaded(self) -> bool:
@@ -45,7 +45,7 @@ class RedisService:
     def get_event_sets_key(slug: str) -> str:
         return f'event:{slug}_sets'
 
-    def add_sets(self, slug: str, redis_set_mapping: dict[int, str]) -> None:
+    def add_sets(self, slug: str, redis_set_mapping: dict) -> None:
         for set_id, s in redis_set_mapping.items():
             self.add_set(slug, set_id, s)
 

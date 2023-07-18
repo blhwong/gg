@@ -1,10 +1,7 @@
 from time import time
-
-from praw import Reddit
+from typing import Any
 
 from logger import logging
-from src.client.startgg.api import StartGGClient
-from src.data.redis_db import RedisService
 from src.data.redis_mapper import upset_thread_item_to_redis_set
 from src.domain.set import Set, Entrant, Game, Selection, Character
 from src.domain.upset_thread import UpsetThread
@@ -15,7 +12,7 @@ logger = logging.getLogger(__name__)
 
 class Service:
 
-    def __init__(self, db_service: RedisService, reddit_client: Reddit, startgg_client: StartGGClient) -> None:
+    def __init__(self, db_service: Any, reddit_client: Any, startgg_client: Any) -> None:
         self.db_service = db_service
         self.reddit_client = reddit_client
         self.startgg_client = startgg_client
@@ -96,10 +93,10 @@ class Service:
             self.db_service.set_is_characters_loaded(1)
         return self.db_service.get_character_name(character_key)
 
-    def get_event(self, slug: str, page: int) -> object:
+    def get_event(self, slug: str, page: int) -> dict:
         return self.startgg_client.get_event(slug, page)
 
-    def submit_to_subreddit(self, slug: str, subreddit_name: str, title: str, md: str) -> None:
+    def submit_to_subreddit(self, slug: str, subreddit_name: str, title: str | None, md: str) -> None:
         submission_id = self.db_service.get_submission_id(slug)
         self.db_service.set_last_updated_date(slug, int(time()))
         if submission_id:

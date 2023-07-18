@@ -1,3 +1,4 @@
+from time import time
 from unittest.mock import Mock
 
 import pytest
@@ -28,7 +29,7 @@ winners_set = Set(
     12687800,
     [e1, e2],
     None,
-    None,
+    int(time()),
 )
 losers_set = Set(
     60482458,
@@ -40,7 +41,7 @@ losers_set = Set(
     12687800,
     [e1, e2],
     None,
-    None,
+    int(time()),
 )
 notables_set = Set(
     60482459,
@@ -52,7 +53,7 @@ notables_set = Set(
     12394650,
     [e1, e2],
     None,
-    None,
+    int(time()),
 )
 dqs_set = Set(
     60482460,
@@ -64,7 +65,7 @@ dqs_set = Set(
     12687800,
     [e1, e2],
     None,
-    None,
+    int(time()),
 )
 others_set = Set(
     60482461,
@@ -76,7 +77,7 @@ others_set = Set(
     12687800,
     [e3, e4],
     None,
-    None,
+    int(time()),
 )
 
 
