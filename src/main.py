@@ -1,6 +1,6 @@
 import argparse
 import json
-from time import sleep
+from time import sleep, time
 
 import redis
 import requests
@@ -43,7 +43,7 @@ def process(slug: str, title: str, subreddit: str, file: str):
         logger.info('Fetching data from startgg')
         while True:
             logger.debug(f'Fetching page {page}')
-            sleep(0.75)
+            sleep(0.80)
             try:
                 res = service.get_event(slug, page)
             except HTTPError as e:
@@ -64,7 +64,7 @@ def process(slug: str, title: str, subreddit: str, file: str):
     saved_upset_thread = service.get_upset_thread_db(slug)
     md = to_markdown(saved_upset_thread, slug)
 
-    with open(f'output/{title}.md', 'w+') as file:
+    with open(f'output/{int(time())} {title}.md', 'w+') as file:
         logger.info('Saving md to output')
         file.write(md)
 
