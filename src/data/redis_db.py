@@ -49,7 +49,7 @@ class RedisService:
         for set_id, s in redis_set_mapping.items():
             self.add_set(slug, set_id, s)
 
-    def add_set(self, slug: str, set_id: int, redis_set: str) -> None:
+    def add_set(self, slug: str, set_id: str, redis_set: str) -> None:
         logger.debug(f"add_set. slug={slug} set_id={set_id} redis_set={redis_set}")
         self.r.hset(self.get_event_sets_key(slug), set_id, redis_set)
 

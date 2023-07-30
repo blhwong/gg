@@ -10,7 +10,7 @@ s2 = [Selection(e1, Character(1777, 'Sephiroth')), Selection(e2, Character(1323,
 
 def test_init_score_1():
     s = Set(
-        60482457,
+        "60482457",
         'Zomba 3 - LG | Tweek 0',
         None,
         5,
@@ -26,7 +26,7 @@ def test_init_score_1():
 
 def test_init_score_2():
     s = Set(
-        60482457,
+        "60482457",
         'Zomba 0 - LG | Tweek 3',
         None,
         5,
@@ -42,7 +42,7 @@ def test_init_score_2():
 
 def test_init_score_3():
     s = Set(
-        60482457,
+        "60482457",
         'Zomba 0 - LG | Tweek 3',
         None,
         5,
@@ -62,7 +62,7 @@ def test_init_score_3():
 
 def test_init_score_4():
     s = Set(
-        60482457,
+        "60482457",
         'Zomba 0 - LG | Tweek 3',
         None,
         5,
@@ -83,7 +83,7 @@ def test_init_score_4():
 
 def test_init_score_5():
     s = Set(
-        60482457,
+        "60482457",
         'DQ',
         None,
         5,
@@ -104,7 +104,7 @@ def test_init_score_5():
 
 def test_init_score_6():
     s = Set(
-        60482457,
+        "60482457",
         'Zomba 1 - LG | Tweek 2',
         None,
         5,
@@ -115,12 +115,12 @@ def test_init_score_6():
         None,
         int(time()),
     )
-    assert s.score is None
+    assert s.score == "2-1"
 
 
 def test_init_score_7():
     s = Set(
-        60482457,
+        "60482457",
         'Zomba 0 - LG | Tweek 3',
         None,
         5,
@@ -135,12 +135,12 @@ def test_init_score_7():
         ],
         int(time()),
     )
-    assert s.score is None
+    assert s.score == "3-0"
 
 
 def test_get_winners_selection_1():
     s = Set(
-        60482457,
+        "60482457",
         'Zomba 0 - LG | Tweek 3',
         None,
         5,
@@ -160,7 +160,7 @@ def test_get_winners_selection_1():
 
 def test_get_winners_selection_2():
     s = Set(
-        60482457,
+        "60482457",
         'Zomba 0 - LG | Tweek 3',
         None,
         5,
@@ -180,7 +180,7 @@ def test_get_winners_selection_2():
 
 def test_get_characters_selections():
     s = Set(
-        60482457,
+        "60482457",
         'Zomba 0 - LG | Tweek 3',
         None,
         5,
@@ -197,7 +197,7 @@ def test_get_characters_selections():
 
 def test_is_dq_and_out_1():
     s = Set(
-        60482457,
+        "60482457",
         'Zomba 0 - LG | Tweek 3',
         None,
         5,
@@ -213,7 +213,7 @@ def test_is_dq_and_out_1():
 
 def test_is_dq_and_out_2():
     s = Set(
-        60482457,
+        "60482457",
         'DQ',
         None,
         5,
@@ -229,7 +229,7 @@ def test_is_dq_and_out_2():
 
 def test_is_notable_1():
     s = Set(
-        60482457,
+        "60482457",
         'Zomba 2 - LG | Tweek 3',
         None,
         5,

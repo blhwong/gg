@@ -123,7 +123,7 @@ class Set:
 
     def __init__(
             self,
-            identifier: int,
+            identifier: str,
             display_score: str,
             full_round_text: str | None,
             total_games: int,
@@ -183,28 +183,30 @@ class Set:
         if display_score == 'DQ':
             return 'DQ'
 
-        if games is None:
-            score = display_score
-            score = score.replace(winner.name, '').replace(loser.name, '').replace(' ', '')
-            if score in ['0-2', '0-3', '1-2', '1-3', '2-3']:
-                score = score[::-1]
-        else:
+        score_from_games = None
+        score_from_display_score = display_score
+        score_from_display_score = score_from_display_score.replace(winner.name, '').replace(loser.name, '').replace(' ', '')
+        if score_from_display_score in ['0-2', '0-3', '1-2', '1-3', '2-3']:
+            score_from_display_score = score_from_display_score[::-1]
+        if games is not None:
             winner_score, loser_score = 0, 0
             for game in games:
                 if game.winner_id == winner.id:
                     winner_score += 1
                 else:
                     loser_score += 1
-            score = f'{winner_score}-{loser_score}'
-        if any([
-            total_games == 5 and score[0] != '3',
-            total_games == 3 and score[0] != '2',
-        ]):
-            logger.warning(
-                f'Could not init score. score={score} display_score={display_score} total_games={total_games}',
-            )
-            return None
-        return score
+            score_from_games = f'{winner_score}-{loser_score}'
+        if score_from_display_score and score_from_games:
+            if int(score_from_display_score[0]) > int(score_from_games[0]):
+                logger.debug("Using score_from_display_score.")
+                return score_from_display_score
+            logger.debug("Using score_from_games")
+            return score_from_games
+
+        logger.debug(f"Using one or the other. display_score={display_score} "
+                     f"score_from_games={score_from_games} "
+                     f"score_from_display_score={score_from_display_score}")
+        return score_from_games or score_from_display_score
 
     @staticmethod
     def init_upset_factor(winner_seed: int, loser_seed: int) -> int:

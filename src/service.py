@@ -23,6 +23,7 @@ class Service:
             winner_initial_seed: int,
             loser_initial_seed: int,
             is_dq: bool,
+            score: str,
             min_upset_factor: int = -float('inf'),
             max_seed: int = float('inf'),
             include_dq: bool = False,
@@ -34,6 +35,7 @@ class Service:
             fulfills_min_upset_factor,
             fulfills_not_dq,
             fulfills_max_seed,
+            score is not None,
         ])
 
     def get_upset_thread(self, sets: list[Set]) -> UpsetThread:
@@ -45,6 +47,7 @@ class Service:
                     s.winner.initial_seed,
                     s.loser.initial_seed,
                     s.is_dq(),
+                    s.score,
                     min_upset_factor=1,
                     max_seed=50,
             ):
@@ -54,6 +57,7 @@ class Service:
                     s.winner.initial_seed,
                     s.loser.initial_seed,
                     s.is_dq(),
+                    s.score,
                     min_upset_factor=1,
                     max_seed=50
             ):
@@ -64,6 +68,7 @@ class Service:
                     s.loser.initial_seed,
                     is_dq=True,
                     include_dq=True,
+                    score=s.score,
             ):
                 dqs.append(s)
             elif s.is_notable() and self.apply_filter(
@@ -71,6 +76,7 @@ class Service:
                     s.winner.initial_seed,
                     s.loser.initial_seed,
                     s.is_dq(),
+                    s.score,
                     min_upset_factor=3,
                     max_seed=50,
             ):
@@ -130,7 +136,7 @@ class Service:
         sets = self.db_service.get_sets(slug)
         winners, losers, notables, dqs, other = [], [], [], [], []
         for set_id, redis_set in sets.items():
-            upset_thread_item = redis_set_to_upset_thread_item(int(set_id), redis_set)
+            upset_thread_item = redis_set_to_upset_thread_item(set_id, redis_set)
             category = upset_thread_item.category
             if category == 'winners':
                 winners.append(upset_thread_item)
@@ -159,7 +165,7 @@ class Service:
         if s['games']:
             games = [self.to_domain_game(game) for game in s['games']]
         return Set(
-            s['id'],
+            str(s['id']),
             s['displayScore'],
             s['fullRoundText'],
             s['totalGames'],

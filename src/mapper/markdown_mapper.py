@@ -3,8 +3,10 @@ from datetime import datetime
 import inflect
 from pytz import timezone, utc
 
+from logger import logging
 from src.domain.upset_thread import UpsetThread, UpsetThreadItem
 
+logger = logging.getLogger(__name__)
 p = inflect.engine()
 
 DATETIME_FORMAT = '%m/%d/%y %I:%M %p %Z'
@@ -27,6 +29,7 @@ def to_line_item(item: UpsetThreadItem) -> str:
     if item.upset_factor > 0:
         words.append(f'- Upset Factor {item.upset_factor}')
 
+    logger.debug(f'to_line_item. item={item} words={words}')
     text = ' '.join(words)
     if item.upset_factor >= 4:
         return f'**{text}**'

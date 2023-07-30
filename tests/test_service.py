@@ -20,7 +20,7 @@ s3 = [Selection(e1, Character(1279, 'Diddy Kong')), Selection(e2, Character(1323
 s4 = [Selection(e1, Character(1777, 'Sephiroth')), Selection(e2, Character(1323, 'R.O.B.'))]
 
 winners_set = Set(
-    60482457,
+    "60482457",
     'Zomba 3 - LG | Tweek 0',
     None,
     5,
@@ -32,7 +32,7 @@ winners_set = Set(
     int(time()),
 )
 losers_set = Set(
-    60482458,
+    "60482458",
     'Zomba 3 - LG | Tweek 0',
     None,
     5,
@@ -44,7 +44,7 @@ losers_set = Set(
     int(time()),
 )
 notables_set = Set(
-    60482459,
+    "60482459",
     'LG | Tweek 3 - Zomba 2',
     None,
     5,
@@ -56,7 +56,7 @@ notables_set = Set(
     int(time()),
 )
 dqs_set = Set(
-    60482460,
+    "60482460",
     'DQ',
     None,
     5,
@@ -68,7 +68,7 @@ dqs_set = Set(
     int(time()),
 )
 others_set = Set(
-    60482461,
+    "60482461",
     'Rando 1 3 - Rando 2 0',
     None,
     5,
@@ -345,7 +345,7 @@ def test_to_domain_set(mock_service):
         Game(17627549, 13501615, [selection1, selection2]),
     ]
     assert s == Set(
-        62697291,
+        "62697291",
         "DOOB | idlehands 3 - Smoge | Be Kind 0",
         "Winners Round 1",
         5,

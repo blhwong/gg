@@ -28,7 +28,7 @@ class UpsetThreadItem:
 
     def __init__(
             self,
-            identifier: id,
+            identifier: str,
             winners_name: str,
             winners_characters: str,
             winners_seed: int,
